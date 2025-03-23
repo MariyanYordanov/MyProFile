@@ -12,6 +12,7 @@ public class MyProFileDbContext : DbContext
     public DbSet<Goal> Goals { get; set; }
     public DbSet<Achievement> Achievements { get; set; }
     public DbSet<Mentor> Mentors { get; set; }
+    public DbSet<Event> Events { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
