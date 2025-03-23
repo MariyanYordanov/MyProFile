@@ -4,7 +4,8 @@ public class CreditDto
 {
     public int Id { get; set; }
 
-    public string Type { get; set; } // Пример: "Професия", "Аз и другите", "Мислене"
+    // Пример: "Професия", "Аз и другите", "Мислене"
+    public string Type { get; set; } = string.Empty;
 
     public int Value { get; set; }
 
