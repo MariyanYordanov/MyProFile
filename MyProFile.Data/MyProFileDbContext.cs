@@ -19,6 +19,7 @@ public class MyProFileDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Fluent конфигурации 
         modelBuilder.Entity<Mentor>().HasData(
             new Mentor { Id = 1, FullName = "Васил Петров", SubjectArea = "Програмиране" },
             new Mentor { Id = 2, FullName = "Мария Николова", SubjectArea = "UI/UX дизайн" }
@@ -49,7 +50,6 @@ public class MyProFileDbContext : DbContext
             }
         );
 
-        // Fluent конфигурации 
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasKey(s => s.Id);
@@ -73,6 +73,26 @@ public class MyProFileDbContext : DbContext
                   .HasForeignKey(p => p.StudentId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<Event>().HasData(
+            new Event
+            {
+                Id = 1,
+                Title = "Участие в ученическа конференция",
+                Description = "Изнесена презентация на тема ИИ в образованието",
+                Date = new DateTime(2024, 3, 15),
+                StudentId = 1
+            },
+            new Event
+            {
+                Id = 2,
+                Title = "Стаж в ИТ фирма",
+                Description = "2 седмици практика в Software Company",
+                Date = new DateTime(2024, 6, 10),
+                StudentId = 2
+            }
+        );
+
     }
 
 }
