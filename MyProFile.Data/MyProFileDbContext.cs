@@ -13,6 +13,7 @@ public class MyProFileDbContext : DbContext
     public DbSet<Achievement> Achievements { get; set; }
     public DbSet<Mentor> Mentors { get; set; }
     public DbSet<Event> Events { get; set; }
+    public DbSet<Sanction> Sanctions { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
