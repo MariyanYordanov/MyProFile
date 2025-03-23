@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyProFile.Data;
 
@@ -10,9 +11,11 @@ using MyProFile.Data;
 namespace MyProFile.Data.Migrations
 {
     [DbContext(typeof(MyProFileDbContext))]
-    partial class MyProFileDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250323054246_AddMentorTable")]
+    partial class AddMentorTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -122,20 +125,6 @@ namespace MyProFile.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Mentors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FullName = "Васил Петров",
-                            SubjectArea = "Програмиране"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FullName = "Мария Николова",
-                            SubjectArea = "UI/UX дизайн"
-                        });
                 });
 
             modelBuilder.Entity("Project", b =>
@@ -212,30 +201,6 @@ namespace MyProFile.Data.Migrations
                     b.HasIndex("MentorId");
 
                     b.ToTable("Students");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AverageGrade = 5.4000000000000004,
-                            Class = "10А",
-                            FullName = "Иван Иванов",
-                            MentorId = 1,
-                            ProfilePicturePath = "ivan.jpg",
-                            Rating = "напреднал",
-                            Speciality = "Софтуерни технологии"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AverageGrade = 5.9000000000000004,
-                            Class = "10Б",
-                            FullName = "Елица Георгиева",
-                            MentorId = 2,
-                            ProfilePicturePath = "elitsa.jpg",
-                            Rating = "начинаещ",
-                            Speciality = "Графичен дизайн"
-                        });
                 });
 
             modelBuilder.Entity("Achievement", b =>
