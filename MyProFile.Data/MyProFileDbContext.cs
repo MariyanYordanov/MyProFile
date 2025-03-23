@@ -14,6 +14,7 @@ public class MyProFileDbContext : DbContext
     public DbSet<Mentor> Mentors { get; set; }
     public DbSet<Event> Events { get; set; }
     public DbSet<Sanction> Sanctions { get; set; }
+    public DbSet<Interest> Interests { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
