@@ -7,7 +7,7 @@ using MyProFile.Server.DTOs;
 [Route("api/[controller]")]
 public class AchievementsController : ControllerBase
 {
-    private readonly MyProFileDbContext _context;
+    private readonly MyProFileDbContext _context; //Dependences injention
 
     public AchievementsController(MyProFileDbContext context)
     {
