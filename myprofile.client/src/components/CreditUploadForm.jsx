@@ -37,11 +37,19 @@ export default function CreditUploadForm() {
                 body: formData
             });
 
+            // 👇 Проверяваме дали отговорът е валиден JSON
+            if (!response.ok) {
+                const text = await response.text(); // за дебъгване
+                console.error("❌ Грешка от сървъра:", text);
+                alert("⚠️ Грешка: " + response.status + "\n" + text);
+                return;
+            }
+
             const result = await response.json();
             alert("✅ Кредитът е качен!\n" + result.proofPath);
         } catch (error) {
             console.error("Грешка при качване:", error);
-            alert("❌ Грешка при качване на файла.");
+            alert("❌ Възникна грешка при качването.");
         }
     };
 
