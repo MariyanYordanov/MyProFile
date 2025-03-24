@@ -17,7 +17,8 @@ public class Achievement
 
     [ForeignKey(nameof(Student))]
     public int StudentId { get; set; }
-
     public Student Student { get; set; } = null!;
-}
 
+    public string? ProofPath { get; set; }
+
+}

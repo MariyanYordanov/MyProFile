@@ -7,7 +7,7 @@ using MyProFile.Server.DTOs;
 [Route("api/[controller]")]
 public class AchievementsController : ControllerBase
 {
-    private readonly MyProFileDbContext _context; //Dependences injention
+    private readonly MyProFileDbContext _context; 
 
     public AchievementsController(MyProFileDbContext context)
     {
@@ -107,5 +107,39 @@ public class AchievementsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [HttpPost("upload")]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadAchievementWithFile([FromForm] AchievementUploadRequest request)
+    {
+        if (request.File == null || request.File.Length == 0)
+            return BadRequest("Файлът е празен.");
+
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        if (!Directory.Exists(uploadsPath))
+            Directory.CreateDirectory(uploadsPath);
+
+        var uniqueName = $"{Guid.NewGuid()}_{request.File.FileName}";
+        var fullPath = Path.Combine(uploadsPath, uniqueName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await request.File.CopyToAsync(stream);
+        }
+
+        var achievement = new Achievement
+        {
+            Title = request.Title,
+            Details = request.Details,
+            Date = DateTime.Parse(request.Date),
+            StudentId = request.StudentId,
+            ProofPath = $"/uploads/{uniqueName}"
+        };
+
+        _context.Achievements.Add(achievement);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { id = achievement.Id, proofPath = achievement.ProofPath });
     }
 }
