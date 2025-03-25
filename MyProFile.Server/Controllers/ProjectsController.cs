@@ -8,10 +8,12 @@ using MyProFile.Server.DTOs;
 public class ProjectsController : ControllerBase
 {
     private readonly MyProFileDbContext _context;
+    private readonly IWebHostEnvironment _env;
 
-    public ProjectsController(MyProFileDbContext context)
+    public ProjectsController(MyProFileDbContext context, IWebHostEnvironment env)
     {
         _context = context;
+        _env = env;
     }
 
     // GET: api/Projects
@@ -112,4 +114,41 @@ public class ProjectsController : ControllerBase
 
         return NoContent();
     }
+
+    // ProjectsController.cs
+
+    [HttpPost("upload")]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadProject([FromForm] ProjectUploadRequest request)
+    {
+        if (request.Screenshot == null || request.Screenshot.Length == 0)
+            return BadRequest("Файлът е празен.");
+
+        var uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+        if (!Directory.Exists(uploadsPath))
+            Directory.CreateDirectory(uploadsPath);
+
+        var uniqueName = $"{Guid.NewGuid()}_{request.Screenshot.FileName}";
+        var fullPath = Path.Combine(uploadsPath, uniqueName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await request.Screenshot.CopyToAsync(stream);
+        }
+
+        var project = new Project
+        {
+            Title = request.Title,
+            Description = request.Description,
+            StudentId = request.StudentId,
+            ScreenshotPath = $"/uploads/{uniqueName}",
+            CreatedOn = DateTime.UtcNow
+        };
+
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { id = project.Id, screenshot = project.ScreenshotPath });
+    }
+
 }

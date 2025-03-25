@@ -30,6 +30,9 @@ namespace MyProFile.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ProofPath")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("INTEGER");
 
