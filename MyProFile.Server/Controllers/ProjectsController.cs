@@ -115,8 +115,6 @@ public class ProjectsController : ControllerBase
         return NoContent();
     }
 
-    // ProjectsController.cs
-
     [HttpPost("upload")]
     [RequestSizeLimit(10_000_000)]
     public async Task<IActionResult> UploadProject([FromForm] ProjectUploadRequest request)

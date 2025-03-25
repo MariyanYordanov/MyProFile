@@ -37,7 +37,7 @@ export default function CreditUploadForm() {
                 body: formData
             });
 
-            // 👇 Проверяваме дали отговорът е валиден JSON
+            // Проверяваме дали отговорът е валиден JSON
             if (!response.ok) {
                 const text = await response.text(); // за дебъгване
                 console.error("❌ Грешка от сървъра:", text);

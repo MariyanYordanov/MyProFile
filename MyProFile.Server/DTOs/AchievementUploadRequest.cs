@@ -5,7 +5,9 @@
         public IFormFile File { get; set; } = null!;
         public string Title { get; set; } = string.Empty;
         public string? Details { get; set; }
-        public string Date { get; set; } = string.Empty; // ISO format
+
+        // ISO format
+        public string Date { get; set; } = string.Empty;
         public int StudentId { get; set; }
     }
 }
