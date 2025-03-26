@@ -107,4 +107,38 @@ public class EventsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("upload")]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadEventWithFile([FromForm] EventUploadRequest request)
+    {
+        if (request.File == null || request.File.Length == 0)
+            return BadRequest("Файлът е празен.");
+
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        if (!Directory.Exists(uploadsPath))
+            Directory.CreateDirectory(uploadsPath);
+
+        var uniqueName = $"{Guid.NewGuid()}_{request.File.FileName}";
+        var fullPath = Path.Combine(uploadsPath, uniqueName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await request.File.CopyToAsync(stream);
+        }
+
+        var newEvent = new Event
+        {
+            Title = request.Title,
+            Description = request.Description,
+            Date = DateTime.Parse(request.Date),
+            StudentId = request.StudentId,
+        };
+
+        _context.Events.Add(newEvent);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { id = newEvent.Id, filePath = $"/uploads/{uniqueName}" });
+    }
+
 }

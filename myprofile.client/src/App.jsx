@@ -1,7 +1,8 @@
-﻿import WeatherForecast from "./components/WeatherForecast";
-import CreditUploadForm from "./components/CreditUploadForm";
+﻿import CreditUploadForm from "./components/CreditUploadForm";
 import CreditList from "./components/CreditList";
 import ProjectUploadForm from "./components/ProjectUploadForm";
+import EventUploadForm from "./components/EventUploadForm";
+import GoalForm from "./components/GoalForm";
 
 function App() {
     return (
@@ -11,9 +12,11 @@ function App() {
             <hr />
             <CreditList />
             <hr />
-            <WeatherForecast />
-            <hr />
             <ProjectUploadForm />
+            <hr />
+            <EventUploadForm />
+            <hr />
+            <GoalForm />
         </div>
     );
 }

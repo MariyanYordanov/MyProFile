@@ -3,6 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class Achievement
 {
+    public Achievement()
+    {
+        Date = DateTime.UtcNow;
+    }
+
     [Key]
     public int Id { get; set; }
 
@@ -13,7 +18,7 @@ public class Achievement
     [MaxLength(1000)]
     public string? Details { get; set; }
 
-    public DateTime Date { get; set; } = DateTime.UtcNow;
+    public DateTime Date { get; set; } 
 
     [ForeignKey(nameof(Student))]
     public int StudentId { get; set; }
