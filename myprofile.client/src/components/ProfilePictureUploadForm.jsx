@@ -1,57 +1,53 @@
 ﻿import { useState } from "react";
 
-export default function ProfilePictureUploadForm() {
+export default function ProfilePictureUploadForm({ studentId }) {
     const [file, setFile] = useState(null);
-    const [studentId, setStudentId] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!studentId || !file) {
-            alert("Моля, въведете ID на ученик и изберете файл.");
+        if (!file) {
+            alert("⚠️ Моля, изберете файл.");
             return;
         }
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("studentId", studentId);
 
         try {
-            const response = await fetch("/api/Students/upload-picture", {
+            const response = await fetch(`/api/Students/${studentId}/upload-profile-picture`, {
                 method: "POST",
                 body: formData
             });
 
-            if (!response.ok) throw new Error("Грешка при качването");
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText);
+            }
 
             const result = await response.json();
-            alert(`✅ Снимката е качена успешно!\n${result.profilePicturePath}`);
+            alert(`✅ Успешно качване!\n📸 Път: ${result.profilePicturePath}`);
         } catch (err) {
-            console.error(err);
-            alert("❌ Неуспешно качване на снимката.");
+            alert("❌ Грешка при качване: " + err.message);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>📸 Качване на профилна снимка</h2>
+        <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded shadow">
+            <h2 className="text-lg font-bold">📸 Качване на профилна снимка</h2>
 
             <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files[0])}
-                required
+                className="block"
             />
 
-            <input
-                type="number"
-                placeholder="ID на ученик"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                required
-            />
-
-            <button type="submit">📤 Качи снимка</button>
+            <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+                Качи
+            </button>
         </form>
     );
 }

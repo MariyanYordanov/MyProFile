@@ -96,33 +96,34 @@ public class StudentsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("upload-picture")]
-    [RequestSizeLimit(5_000_000)] // 5MB
-    public async Task<IActionResult> UploadProfilePicture([FromForm] ProfilePictureUploadRequest request)
+    [HttpPost("{id}/upload-profile-picture")]
+    [RequestSizeLimit(5_000_000)]
+    public async Task<IActionResult> UploadProfilePicture(int id, [FromForm] IFormFile file)
     {
-        if (request.File == null || request.File.Length == 0)
+        var student = await _context.Students.FindAsync(id);
+        if (student == null) return NotFound();
+
+        if (file == null || file.Length == 0)
             return BadRequest("Файлът е празен.");
 
-        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile-pictures");
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profiles");
         if (!Directory.Exists(uploadsPath))
             Directory.CreateDirectory(uploadsPath);
 
-        var uniqueName = $"{Guid.NewGuid()}_{request.File.FileName}";
-        var fullPath = Path.Combine(uploadsPath, uniqueName);
+        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+        var fullPath = Path.Combine(uploadsPath, fileName);
 
         using (var stream = new FileStream(fullPath, FileMode.Create))
         {
-            await request.File.CopyToAsync(stream);
+            await file.CopyToAsync(stream);
         }
 
-        var student = await _context.Students.FindAsync(request.StudentId);
-        if (student == null) return NotFound("Ученикът не е намерен.");
-
-        student.ProfilePicturePath = $"/profile-pictures/{uniqueName}";
+        student.ProfilePicturePath = $"/profiles/{fileName}";
         await _context.SaveChangesAsync();
 
-        return Ok(new { student.Id, student.ProfilePicturePath });
+        return Ok(new { student.Id, profilePicturePath = student.ProfilePicturePath });
     }
+
 
     [HttpGet("{id}/overview")]
     public async Task<IActionResult> GetOverview(int id)
