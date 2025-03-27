@@ -95,4 +95,33 @@ public class StudentsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("upload-picture")]
+    [RequestSizeLimit(5_000_000)] // 5MB
+    public async Task<IActionResult> UploadProfilePicture([FromForm] ProfilePictureUploadRequest request)
+    {
+        if (request.File == null || request.File.Length == 0)
+            return BadRequest("Файлът е празен.");
+
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile-pictures");
+        if (!Directory.Exists(uploadsPath))
+            Directory.CreateDirectory(uploadsPath);
+
+        var uniqueName = $"{Guid.NewGuid()}_{request.File.FileName}";
+        var fullPath = Path.Combine(uploadsPath, uniqueName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await request.File.CopyToAsync(stream);
+        }
+
+        var student = await _context.Students.FindAsync(request.StudentId);
+        if (student == null) return NotFound("Ученикът не е намерен.");
+
+        student.ProfilePicturePath = $"/profile-pictures/{uniqueName}";
+        await _context.SaveChangesAsync();
+
+        return Ok(new { student.Id, student.ProfilePicturePath });
+    }
+
 }

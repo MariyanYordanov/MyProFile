@@ -4,6 +4,7 @@ import ProjectUploadForm from "./components/ProjectUploadForm";
 import EventUploadForm from "./components/EventUploadForm";
 import GoalForm from "./components/GoalForm";
 import SanctionForm from "./components/SanctionForm";
+import InterestForm from "./components/InterestForm";
 
 function App() {
     return (
@@ -20,6 +21,8 @@ function App() {
             <GoalForm />
             <hr />
             <SanctionForm />
+            <hr />
+            <InterestForm />
         </div>
     );
 }
