@@ -24,7 +24,7 @@ public class Student
     [MaxLength(50)]
     public string Rating { get; set; } = string.Empty;
 
-    // Релации
+   
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<Credit> Credits { get; set; } = new List<Credit>();
     public ICollection<Goal> Goals { get; set; } = new List<Goal>();

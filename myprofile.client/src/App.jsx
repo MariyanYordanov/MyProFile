@@ -3,6 +3,7 @@ import CreditList from "./components/CreditList";
 import ProjectUploadForm from "./components/ProjectUploadForm";
 import EventUploadForm from "./components/EventUploadForm";
 import GoalForm from "./components/GoalForm";
+import SanctionForm from "./components/SanctionForm";
 
 function App() {
     return (
@@ -17,6 +18,8 @@ function App() {
             <EventUploadForm />
             <hr />
             <GoalForm />
+            <hr />
+            <SanctionForm />
         </div>
     );
 }
