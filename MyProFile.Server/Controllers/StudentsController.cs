@@ -96,12 +96,14 @@ public class StudentsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{id}/upload-profile-picture")]
+
+    [HttpPost("{id}/profile-picture")]
     [RequestSizeLimit(5_000_000)]
     public async Task<IActionResult> UploadProfilePicture(int id, [FromForm] IFormFile file)
     {
         var student = await _context.Students.FindAsync(id);
-        if (student == null) return NotFound();
+        if (student == null)
+            return NotFound();
 
         if (file == null || file.Length == 0)
             return BadRequest("Файлът е празен.");
@@ -121,9 +123,8 @@ public class StudentsController : ControllerBase
         student.ProfilePicturePath = $"/profiles/{fileName}";
         await _context.SaveChangesAsync();
 
-        return Ok(new { student.Id, profilePicturePath = student.ProfilePicturePath });
+        return Ok(new { student.Id, student.ProfilePicturePath });
     }
-
 
     [HttpGet("{id}/overview")]
     public async Task<IActionResult> GetOverview(int id)
@@ -143,88 +144,99 @@ public class StudentsController : ControllerBase
             Speciality = student.Speciality,
             AverageGrade = student.AverageGrade,
             Rating = student.Rating,
-            MentorName = student.Mentor?.FullName
+            MentorName = student.Mentor?.FullName,
+            ProfilePicturePath = student.ProfilePicturePath
+        };
+
+        var credits = await _context.Credits
+            .Where(c => c.StudentId == id)
+            .Select(c => new CreditDto
+            {
+                Id = c.Id,
+                Type = c.Type,
+                Value = c.Value,
+                ValidatedBy = c.ValidatedBy,
+                ProofPath = c.ProofPath,
+                StudentId = c.StudentId,
+                StudentName = c.Student.FullName
+            }).ToListAsync();
+
+        var achievements = await _context.Achievements
+            .Where(a => a.StudentId == id)
+            .Select(a => new AchievementDto
+            {
+                Id = a.Id,
+                Title = a.Title,
+                Details = a.Details,
+                Date = a.Date,
+                StudentId = a.StudentId,
+                StudentName = a.Student.FullName
+            }).ToListAsync();
+
+        var goals = await _context.Goals
+            .Where(g => g.StudentId == id)
+            .Select(g => new GoalDto
+            {
+                Id = g.Id,
+                Area = g.Area,
+                Description = g.Description,
+                StudentId = g.StudentId
+            }).ToListAsync();
+
+        var events = await _context.Events
+            .Where(e => e.StudentId == id)
+            .Select(e => new EventDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                Date = e.Date,
+                StudentId = e.StudentId
+            }).ToListAsync();
+
+        var sanctions = await _context.Sanctions
+            .Where(s => s.StudentId == id)
+            .Select(s => new SanctionDto
+            {
+                Id = s.Id,
+                Reason = s.Reason,
+                Notes = s.Notes,
+                Date = s.Date,
+                StudentId = s.StudentId
+            }).ToListAsync();
+
+        var interests = await _context.Interests
+            .Where(i => i.StudentId == id)
+            .Select(i => new InterestDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Description = i.Description,
+                StudentId = i.StudentId
+            }).ToListAsync();
+
+        var stats = new StatisticsDto
+        {
+            TotalCredits = credits.Sum(c => c.Value),
+            AchievementsCount = achievements.Count,
+            EventsCount = events.Count,
+            GoalsCount = goals.Count,
+            SanctionsCount = sanctions.Count,
+            InterestsCount = interests.Count
         };
 
         var overview = new StudentOverviewDto
         {
             Student = studentDto,
-            Credits = await _context.Credits
-                .Where(c => c.StudentId == id)
-                .Select(c => new CreditDto
-                {
-                    Id = c.Id,
-                    Type = c.Type,
-                    Value = c.Value,
-                    ValidatedBy = c.ValidatedBy,
-                    ProofPath = c.ProofPath,
-                    StudentId = c.StudentId,
-                    StudentName = c.Student.FullName
-                })
-                .ToListAsync(),
-
-            Achievements = await _context.Achievements
-                .Where(a => a.StudentId == id)
-                .Select(a => new AchievementDto
-                {
-                    Id = a.Id,
-                    Title = a.Title,
-                    Details = a.Details,
-                    Date = a.Date,
-                    StudentId = a.StudentId,
-                    StudentName = a.Student.FullName
-                })
-                .ToListAsync(),
-
-            Goals = await _context.Goals
-                .Where(g => g.StudentId == id)
-                .Select(g => new GoalDto
-                {
-                    Id = g.Id,
-                    Area = g.Area,
-                    Description = g.Description,
-                    StudentId = g.StudentId
-                })
-                .ToListAsync(),
-
-            Events = await _context.Events
-                .Where(e => e.StudentId == id)
-                .Select(e => new EventDto
-                {
-                    Id = e.Id,
-                    Title = e.Title,
-                    Description = e.Description,
-                    Date = e.Date,
-                    StudentId = e.StudentId
-                })
-                .ToListAsync(),
-
-            Sanctions = await _context.Sanctions
-                .Where(s => s.StudentId == id)
-                .Select(s => new SanctionDto
-                {
-                    Id = s.Id,
-                    Reason = s.Reason,
-                    Notes = s.Notes,
-                    Date = s.Date,
-                    StudentId = s.StudentId
-                })
-                .ToListAsync(),
-
-            Interests = await _context.Interests
-                .Where(i => i.StudentId == id)
-                .Select(i => new InterestDto
-                {
-                    Id = i.Id,
-                    Name = i.Name,
-                    Description = i.Description,
-                    StudentId = i.StudentId
-                })
-                .ToListAsync()
+            Credits = credits,
+            Achievements = achievements,
+            Goals = goals,
+            Events = events,
+            Sanctions = sanctions,
+            Interests = interests,
+            Stats = stats
         };
 
         return Ok(overview);
     }
-
-
 }

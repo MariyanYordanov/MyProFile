@@ -9,4 +9,6 @@ public class StudentDto
     public double AverageGrade { get; set; }
     public string Rating { get; set; } = string.Empty!;
     public string? MentorName { get; set; }
+    public string? ProfilePicturePath { get; set; }
+
 }

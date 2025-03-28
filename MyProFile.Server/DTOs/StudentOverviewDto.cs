@@ -15,4 +15,6 @@ public class StudentOverviewDto
     public List<SanctionDto> Sanctions { get; set; } = new List<SanctionDto>();
 
     public List<InterestDto> Interests { get; set; } = new List<InterestDto>();
+
+    public StatisticsDto Stats { get; set; } = new StatisticsDto();
 }

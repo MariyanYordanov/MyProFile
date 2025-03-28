@@ -1,51 +1,44 @@
 ﻿import { useState } from "react";
 
-export default function ProfilePictureUploadForm({ studentId }) {
+export default function ProfilePictureUploadForm({ studentId, onUpload }) {
     const [file, setFile] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!file) {
-            alert("⚠️ Моля, изберете файл.");
+            alert("Моля, изберете файл.");
             return;
         }
 
         const formData = new FormData();
         formData.append("file", file);
 
-        try {
-            const response = await fetch(`/api/Students/${studentId}/upload-profile-picture`, {
-                method: "POST",
-                body: formData
-            });
+        const response = await fetch(`/api/students/${studentId}/profile-picture`, {
+            method: "POST",
+            body: formData
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText);
-            }
+        if (response.ok) {
+            const data = await response.json();
+            alert(`✅ Успешно качване!\nПът: ${data.profilePicturePath}`);
 
-            const result = await response.json();
-            alert(`✅ Успешно качване!\n📸 Път: ${result.profilePicturePath}`);
-        } catch (err) {
-            alert("❌ Грешка при качване: " + err.message);
+            // ☑️ Извикай reloadStudent ако е подаден
+            if (onUpload) onUpload();
+
+            // 🧼 Нулирай избрания файл
+            setFile(null);
+        } else {
+            alert("❌ Възникна грешка при качването.");
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded shadow">
-            <h2 className="text-lg font-bold">📸 Качване на профилна снимка</h2>
-
-            <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files[0])}
-                className="block"
-            />
-
-            <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
+        <form onSubmit={handleSubmit} className="space-y-2">
+            <label className="block">
+                📸 Избери нова профилна снимка:
+                <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+            </label>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-1 rounded">
                 Качи
             </button>
         </form>
