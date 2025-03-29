@@ -1,5 +1,10 @@
-﻿public class ProfilePictureUploadRequest
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MyProFile.Server.DTOs
 {
-    public int StudentId { get; set; }
-    public IFormFile File { get; set; } = null!;
+    public class ProfilePictureUploadRequest
+    {
+        [Required]
+        public IFormFile File { get; set; }
+    }
 }

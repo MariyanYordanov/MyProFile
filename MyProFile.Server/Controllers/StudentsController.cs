@@ -14,7 +14,7 @@ public class StudentsController : ControllerBase
         _context = context;
     }
 
-    // GET: api/Students
+    // GET: api/students
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -36,7 +36,7 @@ public class StudentsController : ControllerBase
     }
 
 
-    // GET: api/Students/5
+    // GET: api/students/5
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -51,7 +51,7 @@ public class StudentsController : ControllerBase
         return Ok(student);
     }
 
-    // POST: api/Students
+    // POST: api/students
     [HttpPost]
     public async Task<IActionResult> Create(Student student)
     {
@@ -60,7 +60,7 @@ public class StudentsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = student.Id }, student);
     }
 
-    // PUT: api/Students/5
+    // PUT: api/students/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, Student student)
     {
@@ -83,7 +83,7 @@ public class StudentsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/Students/5
+    // DELETE: api/students/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -96,28 +96,27 @@ public class StudentsController : ControllerBase
         return NoContent();
     }
 
-
     [HttpPost("{id}/profile-picture")]
     [RequestSizeLimit(5_000_000)]
-    public async Task<IActionResult> UploadProfilePicture(int id, [FromForm] IFormFile file)
+    public async Task<IActionResult> UploadProfilePicture(int id, [FromForm] ProfilePictureUploadRequest request)
     {
         var student = await _context.Students.FindAsync(id);
         if (student == null)
             return NotFound();
 
-        if (file == null || file.Length == 0)
+        if (request.File == null || request.File.Length == 0)
             return BadRequest("Файлът е празен.");
 
         var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profiles");
         if (!Directory.Exists(uploadsPath))
             Directory.CreateDirectory(uploadsPath);
 
-        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+        var fileName = $"{Guid.NewGuid()}_{request.File.FileName}";
         var fullPath = Path.Combine(uploadsPath, fileName);
 
         using (var stream = new FileStream(fullPath, FileMode.Create))
         {
-            await file.CopyToAsync(stream);
+            await request.File.CopyToAsync(stream);
         }
 
         student.ProfilePicturePath = $"/profiles/{fileName}";
@@ -125,6 +124,7 @@ public class StudentsController : ControllerBase
 
         return Ok(new { student.Id, student.ProfilePicturePath });
     }
+
 
     [HttpGet("{id}/overview")]
     public async Task<IActionResult> GetOverview(int id)
@@ -158,7 +158,7 @@ public class StudentsController : ControllerBase
                 ValidatedBy = c.ValidatedBy,
                 ProofPath = c.ProofPath,
                 StudentId = c.StudentId,
-                StudentName = c.Student.FullName
+                StudentName = _context.Students.Where(s => s.Id == c.StudentId).Select(s => s.FullName).FirstOrDefault()
             }).ToListAsync();
 
         var achievements = await _context.Achievements
@@ -170,7 +170,7 @@ public class StudentsController : ControllerBase
                 Details = a.Details,
                 Date = a.Date,
                 StudentId = a.StudentId,
-                StudentName = a.Student.FullName
+                StudentName = _context.Students.Where(s => s.Id == a.StudentId).Select(s => s.FullName).FirstOrDefault()
             }).ToListAsync();
 
         var goals = await _context.Goals
