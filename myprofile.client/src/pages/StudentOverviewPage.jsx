@@ -13,6 +13,12 @@ export default function StudentOverviewPage() {
     };
 
     useEffect(() => {
+        if (overview?.student?.profilePicturePath) {
+            console.log("Profile picture path:", overview.student.profilePicturePath);
+        }
+    }, [overview]);
+
+    useEffect(() => {
         reloadStudent();
     }, [id]);
 
@@ -24,10 +30,11 @@ export default function StudentOverviewPage() {
             
             {overview.student.profilePicturePath && (
                 <img
-                    src={`${overview.student.profilePicturePath}?t=${Date.now()}`}
+                    src={`https://localhost:7082${overview.student.profilePicturePath}?t=${Date.now()}`}
                     alt="Профилна снимка"
                     className="w-48 h-48 object-cover rounded-full border mt-4"
                 />
+
             )}
 
             <ProfilePictureUploadForm studentId={id} onUpload={reloadStudent} />

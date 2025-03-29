@@ -124,8 +124,6 @@ public class StudentsController : ControllerBase
 
         return Ok(new { student.Id, student.ProfilePicturePath });
     }
-
-
     [HttpGet("{id}/overview")]
     public async Task<IActionResult> GetOverview(int id)
     {
@@ -149,6 +147,7 @@ public class StudentsController : ControllerBase
         };
 
         var credits = await _context.Credits
+            .Include(c => c.Student)
             .Where(c => c.StudentId == id)
             .Select(c => new CreditDto
             {
@@ -158,10 +157,11 @@ public class StudentsController : ControllerBase
                 ValidatedBy = c.ValidatedBy,
                 ProofPath = c.ProofPath,
                 StudentId = c.StudentId,
-                StudentName = _context.Students.Where(s => s.Id == c.StudentId).Select(s => s.FullName).FirstOrDefault()
+                StudentName = c.Student.FullName
             }).ToListAsync();
 
         var achievements = await _context.Achievements
+            .Include(a => a.Student)
             .Where(a => a.StudentId == id)
             .Select(a => new AchievementDto
             {
@@ -170,7 +170,7 @@ public class StudentsController : ControllerBase
                 Details = a.Details,
                 Date = a.Date,
                 StudentId = a.StudentId,
-                StudentName = _context.Students.Where(s => s.Id == a.StudentId).Select(s => s.FullName).FirstOrDefault()
+                StudentName = a.Student.FullName
             }).ToListAsync();
 
         var goals = await _context.Goals
@@ -183,7 +183,7 @@ public class StudentsController : ControllerBase
                 StudentId = g.StudentId
             }).ToListAsync();
 
-        var events = await _context.Events
+        var eventsList = await _context.Events
             .Where(e => e.StudentId == id)
             .Select(e => new EventDto
             {
@@ -219,7 +219,7 @@ public class StudentsController : ControllerBase
         {
             TotalCredits = credits.Sum(c => c.Value),
             AchievementsCount = achievements.Count,
-            EventsCount = events.Count,
+            EventsCount = eventsList.Count,
             GoalsCount = goals.Count,
             SanctionsCount = sanctions.Count,
             InterestsCount = interests.Count
@@ -231,7 +231,7 @@ public class StudentsController : ControllerBase
             Credits = credits,
             Achievements = achievements,
             Goals = goals,
-            Events = events,
+            Events = eventsList,
             Sanctions = sanctions,
             Interests = interests,
             Stats = stats
