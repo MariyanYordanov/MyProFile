@@ -3,7 +3,5 @@
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
-
-    // По подразбиране
-    public string Role { get; set; } = "student";
+    public string Token { get; set; } = string.Empty;
 }

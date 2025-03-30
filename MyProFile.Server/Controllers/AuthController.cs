@@ -27,18 +27,35 @@ namespace MyProFile.Server.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+            if (string.IsNullOrWhiteSpace(dto.Token))
+                return BadRequest("Липсва токен за покана.");
+
+            var invitation = await _context.Invitations
+                .FirstOrDefaultAsync(i => i.Token == dto.Token && !i.IsUsed && i.Expiration > DateTime.UtcNow);
+
+            if (invitation == null)
+                return BadRequest("Невалиден или изтекъл токен за покана.");
+
+            if (!string.Equals(invitation.Email, dto.Email, StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Имейлът не съвпада с този в поканата.");
+
+            var userExists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
+            if (userExists)
                 return BadRequest("Потребител с този имейл вече съществува.");
 
             var user = new User
             {
                 Email = dto.Email,
-                Username = dto.Username,
+                Username = dto.Username, // Ако имаш поле Username
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = dto.Role
+                Role = invitation.Role
             };
 
             _context.Users.Add(user);
+
+            // маркираме поканата като използвана
+            invitation.IsUsed = true;
+
             await _context.SaveChangesAsync();
 
             return Ok("Успешна регистрация.");

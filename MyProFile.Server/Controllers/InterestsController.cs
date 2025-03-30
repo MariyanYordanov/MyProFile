@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using MyProFile.Data;
 using MyProFile.Server.DTOs;
 
-[Authorize]
+//[Authorize]
+[AllowAnonymous]// за тестване на изпращане на мейл
 [ApiController]
 [Route("api/[controller]")]
 public class InterestsController : ControllerBase
