@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyProFile.Data.Models;
 namespace MyProFile.Data;
 
 public class MyProFileDbContext : DbContext
@@ -15,6 +16,7 @@ public class MyProFileDbContext : DbContext
     public DbSet<Event> Events { get; set; }
     public DbSet<Sanction> Sanctions { get; set; }
     public DbSet<Interest> Interests { get; set; }
+    public DbSet<User> Users { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,6 +28,17 @@ public class MyProFileDbContext : DbContext
             new Mentor { Id = 1, FullName = "Васил Петров", SubjectArea = "Програмиране" },
             new Mentor { Id = 2, FullName = "Мария Николова", SubjectArea = "UI/UX дизайн" }
         );
+
+        modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Email = "admin@myprofile.bg",
+                    Username = "Администратор",
+                    PasswordHash = "$2a$11$KIXTpRZn70aMwdyHf4sFaeQBXoRFBPCE.5sn1ItMnvW8b8VfZ5E.m", // "admin1234"
+                    Role = "Admin"
+                }
+            );
 
         modelBuilder.Entity<Student>().HasData(
             new Student
