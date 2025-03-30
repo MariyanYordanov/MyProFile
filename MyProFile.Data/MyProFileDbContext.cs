@@ -17,6 +17,7 @@ public class MyProFileDbContext : DbContext
     public DbSet<Sanction> Sanctions { get; set; }
     public DbSet<Interest> Interests { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Invitation> Invitations { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

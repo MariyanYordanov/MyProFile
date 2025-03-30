@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MyProFile.Data;
+using MyProFile.Server.Utilities;
 using System.Text;
 
 
@@ -12,6 +13,8 @@ namespace MyProFile.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddScoped<MailHelper>();
 
             builder.Services.AddDbContext<MyProFileDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
