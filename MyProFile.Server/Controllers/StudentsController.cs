@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyProFile.Data;
 using MyProFile.Server.DTOs;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class StudentsController : ControllerBase
@@ -84,6 +86,7 @@ public class StudentsController : ControllerBase
     }
 
     // DELETE: api/students/5
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

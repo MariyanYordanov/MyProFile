@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyProFile.Data;
 using MyProFile.Server.DTOs;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class SanctionsController : ControllerBase
