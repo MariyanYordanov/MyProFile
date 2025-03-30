@@ -18,18 +18,18 @@ namespace MyProFile.Server.Utilities
         {
             try
             {
-                // Зареждане на конфигурация
                 var smtpHost = _config["Mail:Host"];
                 var smtpPortString = _config["Mail:Port"];
                 var smtpUser = _config["Mail:User"];
                 var smtpPass = _config["Mail:Pass"];
                 var fromEmail = _config["Mail:FromEmail"];
                 var fromName = _config["Mail:FromName"];
+                var frontendUrl = _config["AppSettings:FrontendUrl"];
 
-                if (string.IsNullOrWhiteSpace(smtpHost) || string.IsNullOrWhiteSpace(fromEmail))
+                if (string.IsNullOrWhiteSpace(smtpHost) || string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(frontendUrl))
                 {
-                    _logger.LogError("SMTP конфигурацията е непълна. Проверете appsettings.json.");
-                    throw new InvalidOperationException("SMTP конфигурацията е непълна.");
+                    _logger.LogError("SMTP или Frontend конфигурацията е непълна. Проверете appsettings.json.");
+                    throw new InvalidOperationException("SMTP или Frontend конфигурацията е непълна.");
                 }
 
                 if (!int.TryParse(smtpPortString, out var smtpPort))
@@ -38,24 +38,27 @@ namespace MyProFile.Server.Utilities
                     throw new InvalidOperationException("SMTP портът е невалиден.");
                 }
 
-                // Изграждане на съдържание
-                var registrationLink = $"https://localhost:49647/register?token={token}";
+                var registrationLink = $"{frontendUrl}/register?token={token}";
 
                 var fromAddress = new MailAddress(fromEmail, fromName ?? "MyProFile");
                 var toAddress = new MailAddress(email);
                 const string subject = "Покана за регистрация в MyProFile";
 
                 string body = $@"
-                    <p>Получихте покана да се регистрирате в системата MyProFile като <b>{role}</b>.</p>
-                    <p>Моля, използвайте следния линк за да завършите регистрацията:</p>
-                    <p><a href=""{registrationLink}"">{registrationLink}</a></p>
-                    <p>Поздрави,<br/>екипът на MyProFile.</p>";
+                    <html>
+                    <body>
+                        <p>Получихте покана да се регистрирате в системата MyProFile като <strong>{role}</strong>.</p>
+                        <p>Моля, използвайте следния линк за да завършите регистрацията:</p>
+                        <p><a href='{registrationLink}'>{registrationLink}</a></p>
+                        <p>Поздрави,<br/>екипът на MyProFile.</p>
+                    </body>
+                    </html>";
 
                 var smtp = new SmtpClient
                 {
                     Host = smtpHost,
                     Port = smtpPort,
-                    EnableSsl = false, // само за smtp4dev, после true
+                    EnableSsl = false,
                     Credentials = string.IsNullOrWhiteSpace(smtpUser)
                         ? CredentialCache.DefaultNetworkCredentials
                         : new NetworkCredential(smtpUser, smtpPass)
@@ -69,7 +72,7 @@ namespace MyProFile.Server.Utilities
                 };
 
                 await smtp.SendMailAsync(message);
-                _logger.LogInformation("📬 Поканата е успешно изпратена до: {Email}", email);
+                _logger.LogInformation("\ud83d\udcec Поканата е успешно изпратена до: {Email}", email);
             }
             catch (SmtpException smtpEx)
             {

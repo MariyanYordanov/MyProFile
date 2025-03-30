@@ -6,7 +6,7 @@ using MyProFile.Server.DTOs;
 
 namespace MyProFile.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CreditsController : ControllerBase

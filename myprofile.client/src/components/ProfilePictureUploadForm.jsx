@@ -13,7 +13,7 @@ export default function ProfilePictureUploadForm({ studentId, onUpload }) {
         const formData = new FormData();
         formData.append("file", file);
 
-        const response = await fetch(`/api/students/${studentId}/profile-picture`, {
+        const response = await fetch(`/students/${studentId}/profile-picture`, {
             method: "POST",
             body: formData
         });

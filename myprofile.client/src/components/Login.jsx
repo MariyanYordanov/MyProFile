@@ -1,11 +1,14 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../context/AuthProvider";
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,54 +18,38 @@ export default function Login() {
         e.preventDefault();
         setError("");
         try {
-            const res = await axios.post("/api/auth/login", form);
+            const res = await axios.post("/auth/login", form);
             const token = res.data.token;
+            const refreshToken = res.data.refreshToken;
+
             localStorage.setItem("token", token);
+            localStorage.setItem("refreshToken", refreshToken);
 
-            // Декодиране на токена за да получим ролята и ID-то
-            const payload = JSON.parse(atob(token.split(".")[1]));
+            const payload = jwtDecode(token);
+            setUser({
+                id: payload.nameid,
+                email: payload.email,
+                username: payload.unique_name,
+                role: payload.role
+            });
 
-            if (payload.role === "admin") {
-                navigate("/admin");
-            } else if (payload.role === "student") {
-                navigate(`/students/${payload.nameid}`); // nameid е user.Id
-            } else {
-                navigate("/"); // fallback
-            }
+            if (payload.role === "admin") navigate("/admin");
+            else if (payload.role === "student") navigate(`/students/${payload.nameid}`);
+            else if (payload.role === "teacher") navigate("/teacher");
+            else navigate("/guest");
+
         } catch (err) {
             setError("Грешен имейл или парола.");
         }
     };
 
     return (
-        <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
-            <h2 className="text-2xl font-bold mb-4">Вход</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Имейл"
-                    value={form.email}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    autoComplete="email"
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Парола"
-                    value={form.password}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    autoComplete="current-password"
-                    required
-                />
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded">
-                    Влез
-                </button>
-            </form>
-        </div>
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-10 space-y-4">
+            <h2 className="text-xl font-bold">Вход</h2>
+            <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Имейл" className="w-full border p-2" />
+            <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="Парола" className="w-full border p-2" />
+            {error && <div className="text-red-600 text-sm">{error}</div>}
+            <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded">Влез</button>
+        </form>
     );
 }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyProFile.Data;
 using MyProFile.Server.DTOs;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class StudentsController : ControllerBase

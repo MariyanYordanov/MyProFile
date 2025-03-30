@@ -19,7 +19,7 @@ namespace MyProFile.Data.Models
 
         // admin, teacher, student, guest
         [Required]
-        public string Role { get; set; } = "student";
+        public string Role { get; set; }  = string.Empty;
 
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
