@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using MyProFile.Data;
 using MyProFile.Server.Utilities;
-using System.Text;
+
 
 namespace MyProFile.Server
 {
@@ -14,6 +13,12 @@ namespace MyProFile.Server
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<MailHelper>();
+
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+            }).AddEntityFrameworkStores<MyProFileDbContext>().AddDefaultTokenProviders();
+
 
             builder.Services.AddDbContext<MyProFileDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -30,27 +35,7 @@ namespace MyProFile.Server
                         .AllowCredentials());
             });
 
-            var jwtSettings = builder.Configuration.GetSection("Jwt");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
-
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options => {
-                options.RequireHttpsMetadata = true;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings["Issuer"],
-                    ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+            builder.Services.AddAuthentication();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
