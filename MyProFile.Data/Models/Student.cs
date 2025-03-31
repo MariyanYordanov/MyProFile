@@ -32,5 +32,5 @@ public class Student
 
     [ForeignKey(nameof(Mentor))]
     public int? MentorId { get; set; }
-    public Mentor? Mentor { get; set; }
+    public User? Mentor { get; set; }
 }

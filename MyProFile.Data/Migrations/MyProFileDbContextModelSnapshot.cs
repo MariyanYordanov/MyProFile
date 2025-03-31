@@ -185,6 +185,7 @@ namespace MyProFile.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Expiration")
@@ -195,93 +196,20 @@ namespace MyProFile.Data.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SentAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Token")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Invitations");
-                });
-
-            modelBuilder.Entity("Mentor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SubjectArea")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Mentors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FullName = "Васил Петров",
-                            SubjectArea = "Програмиране"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FullName = "Мария Николова",
-                            SubjectArea = "UI/UX дизайн"
-                        });
-                });
-
-            modelBuilder.Entity("MyProFile.Data.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "admin@myprofile.bg",
-                            PasswordHash = "$2a$11$KIXTpRZn70aMwdyHf4sFaeQBXoRFBPCE.5sn1ItMnvW8b8VfZ5E.m",
-                            Role = "Admin",
-                            Username = "Администратор"
-                        });
                 });
 
             modelBuilder.Entity("Project", b =>
@@ -412,6 +340,68 @@ namespace MyProFile.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@example.com",
+                            PasswordHash = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+                            Role = "admin",
+                            Username = "admin1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "teacher@example.com",
+                            PasswordHash = "63cb9c6fa2d65784658539a93ad47f2274a02ddff344537beb97bd399938ad22",
+                            Role = "teacher",
+                            Username = "teacher1"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "student@example.com",
+                            PasswordHash = "19b9dd3e24fad97f47400340f81e118ca3f88be2ee3503b34b9bde0ad5ad7ebd",
+                            Role = "student",
+                            Username = "student1"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Email = "guest@example.com",
+                            PasswordHash = "6b93ccba414ac1d0ae1e77f3fac560c748a6701ed6946735a49d463351518e16",
+                            Role = "guest",
+                            Username = "guest1"
+                        });
+                });
+
             modelBuilder.Entity("Achievement", b =>
                 {
                     b.HasOne("Student", "Student")
@@ -491,17 +481,12 @@ namespace MyProFile.Data.Migrations
 
             modelBuilder.Entity("Student", b =>
                 {
-                    b.HasOne("Mentor", "Mentor")
+                    b.HasOne("User", "Mentor")
                         .WithMany("Students")
                         .HasForeignKey("MentorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Mentor");
-                });
-
-            modelBuilder.Entity("Mentor", b =>
-                {
-                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Student", b =>
@@ -513,6 +498,11 @@ namespace MyProFile.Data.Migrations
                     b.Navigation("Goals");
 
                     b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.Navigation("Students");
                 });
 #pragma warning restore 612, 618
         }

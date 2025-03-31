@@ -23,9 +23,10 @@ export default function ProfilePictureUploadForm({ studentId, onUpload }) {
             alert(`✅ Успешно качване!\nПът: ${data.profilePicturePath}`);
 
             // ☑️ Извикай reloadStudent ако е подаден
-            if (onUpload) onUpload();
+            if (onUpload) {
+                onUpload();
+            }
 
-            // 🧼 Нулирай избрания файл
             setFile(null);
         } else {
             alert("❌ Възникна грешка при качването.");

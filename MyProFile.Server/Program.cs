@@ -14,7 +14,6 @@ namespace MyProFile.Server
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<MailHelper>();
-            builder.Services.AddScoped<RefreshTokenHelper>();
 
             builder.Services.AddDbContext<MyProFileDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));

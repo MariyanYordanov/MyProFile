@@ -14,17 +14,37 @@ namespace MyProFile.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Mentors",
+                name: "Invitations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FullName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    SubjectArea = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
+                    Email = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    Role = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Token = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    SentAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Expiration = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsUsed = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Mentors", x => x.Id);
+                    table.PrimaryKey("PK_Invitations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Username = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    Role = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -45,9 +65,9 @@ namespace MyProFile.Data.Migrations
                 {
                     table.PrimaryKey("PK_Students", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Students_Mentors_MentorId",
+                        name: "FK_Students_Users_MentorId",
                         column: x => x.MentorId,
-                        principalTable: "Mentors",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -208,12 +228,14 @@ namespace MyProFile.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Mentors",
-                columns: new[] { "Id", "FullName", "SubjectArea" },
+                table: "Users",
+                columns: new[] { "Id", "Email", "PasswordHash", "Role", "Username" },
                 values: new object[,]
                 {
-                    { 1, "Васил Петров", "Програмиране" },
-                    { 2, "Мария Николова", "UI/UX дизайн" }
+                    { 1, "admin@example.com", "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9", "admin", "admin1" },
+                    { 2, "teacher@example.com", "63cb9c6fa2d65784658539a93ad47f2274a02ddff344537beb97bd399938ad22", "teacher", "teacher1" },
+                    { 3, "student@example.com", "19b9dd3e24fad97f47400340f81e118ca3f88be2ee3503b34b9bde0ad5ad7ebd", "student", "student1" },
+                    { 4, "guest@example.com", "6b93ccba414ac1d0ae1e77f3fac560c748a6701ed6946735a49d463351518e16", "guest", "guest1" }
                 });
 
             migrationBuilder.InsertData(
@@ -294,6 +316,9 @@ namespace MyProFile.Data.Migrations
                 name: "Interests");
 
             migrationBuilder.DropTable(
+                name: "Invitations");
+
+            migrationBuilder.DropTable(
                 name: "Projects");
 
             migrationBuilder.DropTable(
@@ -303,7 +328,7 @@ namespace MyProFile.Data.Migrations
                 name: "Students");
 
             migrationBuilder.DropTable(
-                name: "Mentors");
+                name: "Users");
         }
     }
 }
