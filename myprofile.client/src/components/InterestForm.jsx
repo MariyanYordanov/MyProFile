@@ -15,7 +15,7 @@ export default function InterestForm() {
         };
 
         try {
-            const response = await fetch("/api/Interests", {
+            const response = await fetch("/Interests", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

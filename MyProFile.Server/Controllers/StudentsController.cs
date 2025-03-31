@@ -30,7 +30,7 @@ public class StudentsController : ControllerBase
                 Speciality = s.Speciality,
                 AverageGrade = s.AverageGrade,
                 Rating = s.Rating,
-                MentorName = s.Mentor.Username
+                MentorName = s.Mentor.UserName
             })
             .ToListAsync();
 
@@ -145,7 +145,7 @@ public class StudentsController : ControllerBase
             Speciality = student.Speciality,
             AverageGrade = student.AverageGrade,
             Rating = student.Rating,
-            MentorName = student.Mentor?.Username,
+            MentorName = student.Mentor?.UserName,
             ProfilePicturePath = student.ProfilePicturePath
         };
 

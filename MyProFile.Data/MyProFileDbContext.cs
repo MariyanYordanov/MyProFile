@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using MyProFile.Data.Models;
 namespace MyProFile.Data;
 
-public class MyProFileDbContext : DbContext
+public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public MyProFileDbContext(DbContextOptions<MyProFileDbContext> options)
         : base(options) { }
@@ -14,7 +17,6 @@ public class MyProFileDbContext : DbContext
     public DbSet<Event> Events { get; set; }
     public DbSet<Sanction> Sanctions { get; set; }
     public DbSet<Interest> Interests { get; set; }
-    public DbSet<User> Users { get; set; }
     public DbSet<Invitation> Invitations { get; set; }
 
 
@@ -22,41 +24,54 @@ public class MyProFileDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Fluent конфигурации 
+        modelBuilder.Entity<IdentityRole<int>>().HasData(
+    new IdentityRole<int> { Id = 1, Name = "admin", NormalizedName = "ADMIN" },
+    new IdentityRole<int> { Id = 2, Name = "teacher", NormalizedName = "TEACHER" },
+    new IdentityRole<int> { Id = 3, Name = "student", NormalizedName = "STUDENT" }
+);
+
+
+        var hasher = new PasswordHasher<User>();
+
         modelBuilder.Entity<User>().HasData(
             new User
             {
                 Id = 1,
-                Username = "admin1",
+                UserName = "admin1",
+                NormalizedUserName = "ADMIN1",
                 Email = "admin@example.com",
-                PasswordHash = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+                NormalizedEmail = "ADMIN@EXAMPLE.COM",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null, "Admin123!"),
+                SecurityStamp = Guid.NewGuid().ToString(),
                 Role = "admin"
             },
             new User
             {
                 Id = 2,
-                Username = "teacher1",
+                UserName = "teacher1",
+                NormalizedUserName = "TEACHER1",
                 Email = "teacher@example.com",
-                PasswordHash = "63cb9c6fa2d65784658539a93ad47f2274a02ddff344537beb97bd399938ad22",
+                NormalizedEmail = "TEACHER@EXAMPLE.COM",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null, "Teacher123!"),
+                SecurityStamp = Guid.NewGuid().ToString(),
                 Role = "teacher"
             },
             new User
             {
                 Id = 3,
-                Username = "student1",
+                UserName = "student1",
+                NormalizedUserName = "STUDENT1",
                 Email = "student@example.com",
-                PasswordHash = "19b9dd3e24fad97f47400340f81e118ca3f88be2ee3503b34b9bde0ad5ad7ebd",
+                NormalizedEmail = "STUDENT@EXAMPLE.COM",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null, "Student123!"),
+                SecurityStamp = Guid.NewGuid().ToString(),
                 Role = "student"
-            },
-            new User
-            {
-                Id = 4,
-                Username = "guest1",
-                Email = "guest@example.com",
-                PasswordHash = "6b93ccba414ac1d0ae1e77f3fac560c748a6701ed6946735a49d463351518e16",
-                Role = "guest"
             }
         );
+
 
         modelBuilder.Entity<Student>().HasData(
             new Student
@@ -92,9 +107,9 @@ public class MyProFileDbContext : DbContext
             entity.Property(s => s.Rating).HasMaxLength(50);
 
             entity.HasOne(s => s.Mentor)
-                  .WithMany(m => m.Students)
+                  .WithMany(u => u.Mentees)
                   .HasForeignKey(s => s.MentorId)
-                  .OnDelete(DeleteBehavior.SetNull);
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Project>(entity =>

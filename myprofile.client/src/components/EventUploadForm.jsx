@@ -23,7 +23,7 @@ export default function EventUploadForm() {
         formData.append("studentId", studentId);
 
         try {
-            const response = await fetch("/api/Events/upload", {
+            const response = await fetch("/Events/upload", {
                 method: "POST",
                 body: formData,
             });

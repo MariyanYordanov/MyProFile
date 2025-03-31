@@ -2,11 +2,11 @@
 import { useAuth } from "../context/AuthProvider";
 
 export default function RequireRole({ allowedRoles = [] }) {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
 
-    if (loading) return <div className="text-center mt-10">Зареждане...</div>;
-    if (!user) return <Navigate to="/login" replace />;
-    if (!allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
+    if (!user || !allowedRoles.includes(user.role)) {
+        return <Navigate to="/unauthorized" replace />;
+    }
 
     return <Outlet />;
 }

@@ -15,7 +15,7 @@ export default function ProjectUploadForm() {
         formData.append("screenshot", screenshot);
 
         try {
-            const res = await fetch("/api/Projects/upload", {
+            const res = await fetch("/Projects/upload", {
                 method: "POST",
                 body: formData
             });

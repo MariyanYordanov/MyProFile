@@ -1,23 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
 
-public class User : IdentityUser
-{    
-    [Key]
-    public int Id { get; set; }
+namespace MyProFile.Data.Models
+{
+    public class User : IdentityUser<int>
+    {
+        // или "teacher", "admin", "guest"
+        public string Role { get; set; } = "student"; 
 
-    [Required]
-    [MaxLength(100)]
-    public string Username { get; set; } = string.Empty;
-
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
-
-    [Required]
-    public string PasswordHash { get; set; } = string.Empty;
-
-    public string Role { get; set; } = string.Empty;
-
-    public ICollection<Student> Students { get; set; } = new List<Student>();
+        // Връзка с ученици (ако този User е teacher)
+        public ICollection<Student>? Mentees { get; set; }
+    }
 }

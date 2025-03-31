@@ -18,7 +18,7 @@ export default function AchievementUploadForm() {
         formData.append("studentId", studentId);
 
         try {
-            const response = await fetch("/api/Achievements/upload", {
+            const response = await fetch("/Achievements/upload", {
                 method: "POST",
                 body: formData
             });

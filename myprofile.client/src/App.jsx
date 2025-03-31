@@ -1,46 +1,41 @@
-﻿import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import RegisterFromInvitation from "./components/RegisterFromInvitation";
-import SendInvitationForm from "./components/SendInvitationForm";
-import AdminPanel from "./components/AdminPanel";
-import AdminLayout from "./components/AdminLayout";
-import StudentProfile from "./components/StudentProfile";
+﻿import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import AdminPanel from "./pages/AdminPanel";
+import StudentProfile from "./pages/StudentProfile";
+import Unauthorized from "./pages/Unauthorized";
+import NotFound from "./pages/NotFound";
 import RequireAuth from "./components/RequireAuth";
 import RequireRole from "./components/RequireRole";
-import { useAuth } from "./context/AuthProvider";
-import TeacherPage from "./pages/TeacherPage";
-import GuestPage from "./pages/GuestPage";
-import StudentOverviewPage from "./pages/StudentOverviewPage"; // ✅ важен import
+import { AuthProvider } from "./context/AuthProvider"; // ❗ добавен import
 
 function App() {
-    const { user } = useAuth();
-
     return (
-        <Router>
-            <Routes>
-                {/* Публични маршрути */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<RegisterFromInvitation />} />
+        <AuthProvider>
+            <Router>
+                <Routes>
+                    {/* 🟢 Публични маршрути */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/unauthorized" element={<Unauthorized />} />
 
-                {/* Защитени маршрути */}
-                <Route element={<RequireAuth />}>
-                    <Route path="/students/:id" element={<StudentProfile />} />
-                    <Route path="/profile" element={<StudentProfile />} />
-                    <Route path="/teacher" element={<TeacherPage />} />
-                    <Route path="/guest" element={<GuestPage />} />
-                </Route>
-
-                {/* Админ маршрути */}
-                <Route element={<RequireRole allowedRoles={["admin"]} />}>
-                    <Route path="/admin" element={<AdminLayout user={user} />}>
-                        <Route index element={<AdminPanel />} />
-                        <Route path="send-invite" element={<SendInvitationForm />} />
+                    {/* 🔐 Защитени маршрути */}
+                    <Route element={<RequireAuth />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/students/:id" element={<StudentProfile />} />
                     </Route>
-                </Route>
-            </Routes>
-        </Router>
+
+                    {/* 🔐 Само за админ */}
+                    <Route element={<RequireRole allowedRoles={["admin"]} />}>
+                        <Route path="/admin" element={<AdminPanel />} />
+                    </Route>
+
+                    {/* 🧭 Fallback */}
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Router>
+        </AuthProvider>
     );
 }
 

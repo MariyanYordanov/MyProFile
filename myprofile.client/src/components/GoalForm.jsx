@@ -15,7 +15,7 @@ export default function GoalForm() {
         };
 
         try {
-            const response = await fetch("/api/Goals", {
+            const response = await fetch("/Goals", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
