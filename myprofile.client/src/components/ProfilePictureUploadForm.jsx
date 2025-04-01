@@ -1,46 +1,44 @@
 ﻿import { useState } from "react";
+import api from "@/services/api.js";
 
-export default function ProfilePictureUploadForm({ studentId, onUpload }) {
+
+export default function ProfilePictureUploadForm({ studentId, onUploadSuccess }) {
     const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!file) {
-            alert("Моля, изберете файл.");
-            return;
-        }
+        if (!file) return alert("Моля, изберете файл.");
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("profilePicture", file);
 
-        const response = await fetch(`/students/${studentId}/profile-picture`, {
-            method: "POST",
-            body: formData
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            alert(`✅ Успешно качване!\nПът: ${data.profilePicturePath}`);
-
-            // ☑️ Извикай reloadStudent ако е подаден
-            if (onUpload) {
-                onUpload();
-            }
-
+        try {
+            setLoading(true);
+            await api.post(`/students/${studentId}/profile-picture`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            alert("✅ Профилната снимка е качена успешно!");
+            onUploadSuccess?.();
             setFile(null);
-        } else {
-            alert("❌ Възникна грешка при качването.");
+        } catch (err) {
+            console.error("❌ Грешка при качване на снимка:", err);
+            alert("⚠️ Възникна грешка при качването.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-2">
-            <label className="block">
-                📸 Избери нова профилна снимка:
-                <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-            </label>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-1 rounded">
-                Качи
+        <form onSubmit={handleSubmit}>
+            <h2>📷 Качи профилна снимка</h2>
+            <input type="file" accept="image/*" onChange={handleFileChange} required />
+            <button type="submit" disabled={loading}>
+                {loading ? "Качване..." : "Качи"}
             </button>
         </form>
     );

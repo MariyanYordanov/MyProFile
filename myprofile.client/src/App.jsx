@@ -8,7 +8,7 @@ import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import RequireAuth from "./components/RequireAuth";
 import RequireRole from "./components/RequireRole";
-import { AuthProvider } from "./context/AuthProvider"; // ❗ добавен import
+import { AuthProvider } from "./context/AuthProvider"; 
 
 function App() {
     return (

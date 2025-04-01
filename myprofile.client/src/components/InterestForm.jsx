@@ -1,69 +1,46 @@
 ﻿import { useState } from "react";
+import api from "@/services/api.js";
 
-export default function InterestForm() {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [studentId, setStudentId] = useState("");
+export default function InterestForm({ studentId, onAdded }) {
+    const [interest, setInterest] = useState("");
+    const [error, setError] = useState(null);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
-        const payload = {
-            name,
-            description,
-            studentId: Number(studentId)
-        };
-
-        try {
-            const response = await fetch("/Interests", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+        api
+            .post(`/students/${studentId}/interests`, { name: interest })
+            .then((res) => {
+                onAdded?.(res.data);
+                setInterest("");
+                setError(null);
+            })
+            .catch((err) => {
+                console.error("Error adding interest:", err);
+                setError("Грешка при добавяне на интерес.");
             });
-
-            if (response.ok) {
-                alert("✅ Интересът е добавен успешно!");
-                setName("");
-                setDescription("");
-                setStudentId("");
-            } else {
-                alert("❌ Грешка при добавяне на интереса.");
-            }
-        } catch (error) {
-            console.error("Грешка:", error);
-            alert("⚠️ Възникна грешка при връзката с API.");
-        }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>💡 Добавяне на интерес</h2>
-
-            <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Име на интерес"
-                required
-            />
-
-            <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Описание (по избор)"
-            />
-
-            <input
-                type="number"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                placeholder="ID на ученик"
-                required
-            />
-
-            <button type="submit">🌟 Добави интерес</button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label className="block">Интерес:</label>
+                <input
+                    type="text"
+                    name="interest"
+                    value={interest}
+                    onChange={(e) => setInterest(e.target.value)}
+                    required
+                    className="w-full border rounded p-2"
+                />
+            </div>
+            {error && <p className="text-red-600">{error}</p>}
+            <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+                Добави интерес
+            </button>
         </form>
     );
 }

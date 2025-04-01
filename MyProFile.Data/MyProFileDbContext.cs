@@ -25,10 +25,9 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<IdentityRole<int>>().HasData(
-    new IdentityRole<int> { Id = 1, Name = "admin", NormalizedName = "ADMIN" },
-    new IdentityRole<int> { Id = 2, Name = "teacher", NormalizedName = "TEACHER" },
-    new IdentityRole<int> { Id = 3, Name = "student", NormalizedName = "STUDENT" }
-);
+        new IdentityRole<int> { Id = 1, Name = "admin", NormalizedName = "ADMIN" },
+        new IdentityRole<int> { Id = 2, Name = "teacher", NormalizedName = "TEACHER" },
+        new IdentityRole<int> { Id = 3, Name = "student", NormalizedName = "STUDENT" });
 
 
         var hasher = new PasswordHasher<User>();

@@ -1,86 +1,77 @@
 ﻿import { useState } from "react";
+import api from "@/services/api.js";
 
-export default function EventUploadForm() {
-    const [file, setFile] = useState(null);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [date, setDate] = useState("");
-    const [studentId, setStudentId] = useState("");
 
-    const handleSubmit = async (e) => {
+export default function EventUploadForm({ studentId, onEventAdded }) {
+    const [formData, setFormData] = useState({
+        title: "",
+        description: "",
+        date: "",
+    });
+    const [error, setError] = useState(null);
+
+    const handleChange = (e) => {
+        setFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!file || !studentId || !title || !date) {
-            alert("Моля, попълни всички задължителни полета.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("date", date);
-        formData.append("studentId", studentId);
-
-        try {
-            const response = await fetch("/Events/upload", {
-                method: "POST",
-                body: formData,
+        api
+            .post(`/students/${studentId}/events`, formData)
+            .then((res) => {
+                onEventAdded?.(res.data);
+                setFormData({ title: "", description: "", date: "" });
+                setError(null);
+            })
+            .catch((err) => {
+                console.error("Event upload error:", err);
+                setError("Грешка при изпращане на събитието.");
             });
-
-            if (response.ok) {
-                const result = await response.json();
-                alert("✅ Събитието е добавено!\n" + result.filePath);
-            } else {
-                alert("❌ Грешка при качване на събитието.");
-            }
-        } catch (err) {
-            console.error("Грешка:", err);
-            alert("❌ Възникна грешка.");
-        }
     };
 
     return (
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <h2>📅 Качване на събитие</h2>
-
-            <input
-                type="file"
-                accept="image/*,.pdf"
-                onChange={(e) => setFile(e.target.files[0])}
-                required
-            />
-
-            <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Заглавие"
-                required
-            />
-
-            <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Описание"
-            />
-
-            <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-            />
-
-            <input
-                type="number"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                placeholder="ID на ученик"
-                required
-            />
-
-            <button type="submit">📤 Качи събитие</button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label className="block">Заглавие:</label>
+                <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                    className="w-full border rounded p-2"
+                />
+            </div>
+            <div>
+                <label className="block">Описание:</label>
+                <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    className="w-full border rounded p-2"
+                />
+            </div>
+            <div>
+                <label className="block">Дата:</label>
+                <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                    className="w-full border rounded p-2"
+                />
+            </div>
+            {error && <div className="text-red-500">{error}</div>}
+            <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+                Запиши събитие
+            </button>
         </form>
     );
 }

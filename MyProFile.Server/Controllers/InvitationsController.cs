@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MyProFile.Data;
 using MyProFile.Server.Utilities;
 
 namespace MyProFile.Server.Controllers
 {
     // Само админ може да праща покани
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class InvitationsController : ControllerBase

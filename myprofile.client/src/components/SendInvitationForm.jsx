@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
-import axios from "axios";
+import api from "@/services/api.js";
+
 
 export default function SendInvitationForm() {
     const [email, setEmail] = useState("");
@@ -9,17 +10,18 @@ export default function SendInvitationForm() {
         e.preventDefault();
         setMessage("");
         try {
-            await axios.post("/auth/invite", { email });
-            setMessage("Поканата е изпратена успешно.");
+            await api.post("/auth/invite", { email });
+            setMessage("✅ Поканата е изпратена успешно.");
             setEmail("");
         } catch (err) {
-            setMessage("Грешка при изпращане на поканата.");
+            console.error(err);
+            setMessage("❌ Грешка при изпращане на поканата.");
         }
     };
 
     return (
         <div className="max-w-md mx-auto p-4 border rounded shadow">
-            <h2 className="text-xl font-bold mb-2">Изпрати покана</h2>
+            <h2 className="text-xl font-bold mb-2">📨 Изпрати покана</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
                 <input
                     type="email"

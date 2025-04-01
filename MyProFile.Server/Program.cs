@@ -7,7 +7,6 @@ using MyProFile.Data;
 using MyProFile.Data.Models;
 using MyProFile.Server.Utilities;
 using System.Text;
-using Microsoft.AspNetCore.SpaServices;
 
 
 namespace MyProFile.Server
@@ -18,7 +17,6 @@ namespace MyProFile.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 🔐 Services
             builder.Services.AddScoped<IEmailSender, MailHelper>();
             builder.Services.AddScoped<JwtService>();
 
@@ -75,7 +73,6 @@ namespace MyProFile.Server
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles(); 
 
             if (app.Environment.IsDevelopment())
             {
@@ -90,14 +87,6 @@ namespace MyProFile.Server
 
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSpa(spa =>
-                {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5173");
-                });
-            }
 
             app.Run();
         }

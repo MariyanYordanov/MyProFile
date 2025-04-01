@@ -1,24 +1,36 @@
-﻿
+﻿// src/pages/Login.jsx
 import { useState } from "react";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
+import api from "@/services/api";
+import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
-    const { setAuthData } = useAuth();
+    const { login } = useAuth();
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+
         try {
-            const response = await axios.post("/auth/login", { email, password });
-            const token = response.data.token;
-            const decoded = jwtDecode(token);
-            setAuthData({ token, user: decoded });
+            const res = await api.post("/auth/login", { email, password });
+            const token = res.data.token;
+
+            try {
+                jwtDecode(token); // проверка дали е валиден JWT
+            } catch {
+                setError("Получен е невалиден токен от сървъра.");
+                return;
+            }
+
+            localStorage.setItem("token", token);
+            localStorage.setItem("refreshToken", res.data.refreshToken || "");
+
+            login(token); // подава се само ако е валиден
             navigate("/dashboard");
         } catch (err) {
             setError("Невалидни данни за вход");
@@ -26,27 +38,36 @@ export default function Login() {
     };
 
     return (
-        <div className="max-w-md mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Вход</h1>
-            {error && <p className="text-red-600 mb-2">{error}</p>}
-            <form onSubmit={handleLogin} className="space-y-4">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <form
+                onSubmit={handleSubmit}
+                className="bg-white p-6 rounded shadow-md w-80"
+            >
+                <h2 className="text-2xl font-bold mb-4 text-center">Вход</h2>
+
                 <input
                     type="email"
                     placeholder="Имейл"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border p-2 rounded"
+                    required
+                    className="mb-4 p-2 border rounded w-full"
                 />
+
                 <input
                     type="password"
                     placeholder="Парола"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border p-2 rounded"
+                    required
+                    className="mb-4 p-2 border rounded w-full"
                 />
+
+                {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
+
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 text-white p-2 rounded"
+                    className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700"
                 >
                     Вход
                 </button>

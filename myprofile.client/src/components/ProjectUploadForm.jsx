@@ -1,9 +1,10 @@
 ﻿import { useState } from "react";
+import api from "@/services/api.js";
 
-export default function ProjectUploadForm() {
+
+export default function ProjectUploadForm({ studentId, onUpload }) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [studentId, setStudentId] = useState("");
     const [screenshot, setScreenshot] = useState(null);
 
     const handleSubmit = async (e) => {
@@ -12,56 +13,48 @@ export default function ProjectUploadForm() {
         formData.append("title", title);
         formData.append("description", description);
         formData.append("studentId", studentId);
-        formData.append("screenshot", screenshot);
+        if (screenshot) formData.append("screenshot", screenshot);
 
         try {
-            const res = await fetch("/Projects/upload", {
-                method: "POST",
-                body: formData
+            await api.post(`/projects`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
-
-            const result = await res.json();
-            alert("✅ Проект качен: " + result.screenshot);
+            onUpload?.();
+            setTitle("");
+            setDescription("");
+            setScreenshot(null);
         } catch (err) {
-            console.error("Грешка:", err);
-            alert("❌ Качването се провали.");
+            console.error("Project upload failed", err);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <h2>📁 Качи проект</h2>
-
+        <form onSubmit={handleSubmit} className="space-y-4">
             <input
                 type="text"
                 placeholder="Заглавие"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                className="w-full border p-2"
             />
-
             <textarea
                 placeholder="Описание"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                className="w-full border p-2"
             />
-
-            <input
-                type="number"
-                placeholder="Student ID"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                required
-            />
-
             <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setScreenshot(e.target.files[0])}
-                required
+                className="w-full"
             />
-
-            <button type="submit">📤 Качи</button>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                Качи проект
+            </button>
         </form>
     );
 }

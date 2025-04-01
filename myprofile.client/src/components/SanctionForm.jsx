@@ -1,79 +1,68 @@
 ﻿import { useState } from "react";
+import api from "@/services/api.js";
 
-export default function SanctionForm() {
-    const [reason, setReason] = useState("");
-    const [notes, setNotes] = useState("");
-    const [date, setDate] = useState("");
-    const [studentId, setStudentId] = useState("");
 
-    const handleSubmit = async (e) => {
+export default function SanctionForm({ studentId, onSanctionAdded }) {
+    const [formData, setFormData] = useState({
+        reason: "",
+        date: "",
+    });
+    const [error, setError] = useState(null);
+
+    const handleChange = (e) => {
+        setFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
 
-        const payload = {
-            reason,
-            notes,
-            date,
-            studentId: Number(studentId)
-        };
-
-        try {
-            const response = await fetch("/api/Sanctions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+        api
+            .post(`/students/${studentId}/sanctions`, formData)
+            .then((res) => {
+                onSanctionAdded?.(res.data);
+                setFormData({ reason: "", date: "" });
+                setError(null);
+            })
+            .catch((err) => {
+                console.error("Sanction error:", err);
+                setError("Възникна грешка при добавяне на санкцията.");
             });
-
-            if (response.ok) {
-                alert("✅ Санкцията е добавена успешно!");
-                setReason("");
-                setNotes("");
-                setDate("");
-                setStudentId("");
-            } else {
-                alert("❌ Грешка при добавяне на санкцията.");
-            }
-        } catch (error) {
-            console.error("Грешка:", error);
-            alert("⚠️ Възникна грешка при връзката с API.");
-        }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>🛑 Добавяне на санкция</h2>
-
-            <input
-                type="text"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Причина"
-                required
-            />
-
-            <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Бележки (по избор)"
-            />
-
-            <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-            />
-
-            <input
-                type="number"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                placeholder="ID на ученик"
-                required
-            />
-
-            <button type="submit">🚫 Добави санкция</button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label className="block">Причина:</label>
+                <input
+                    type="text"
+                    name="reason"
+                    value={formData.reason}
+                    onChange={handleChange}
+                    required
+                    className="w-full border rounded p-2"
+                />
+            </div>
+            <div>
+                <label className="block">Дата:</label>
+                <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                    className="w-full border rounded p-2"
+                />
+            </div>
+            {error && <p className="text-red-600">{error}</p>}
+            <button
+                type="submit"
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+                Добави санкция
+            </button>
         </form>
     );
 }

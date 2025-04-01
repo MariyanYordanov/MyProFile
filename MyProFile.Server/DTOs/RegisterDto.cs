@@ -17,8 +17,8 @@ namespace MyProFile.Server.DTOs
         public string Password { get; set; } = string.Empty;
 
         // За бъдещо разширение: по покана, с роля, клас и специалност
-        public string? Role { get; set; }
-        public string? Class { get; set; }
-        public string? Speciality { get; set; }
+        //public string? Role { get; set; }
+        //public string? Class { get; set; }
+        //public string? Speciality { get; set; }
     }
 }
