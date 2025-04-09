@@ -8,13 +8,14 @@ using MyProFile.Data.Models;
 using MyProFile.Server.Utilities;
 using System.Text;
 
-
 namespace MyProFile.Server
 {
     public class Program
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("[APP] Starting MyProFile...");
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<IEmailSender, MailHelper>();
@@ -54,7 +55,7 @@ namespace MyProFile.Server
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173")
+                    policy.WithOrigins("https://localhost:5173")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
@@ -64,12 +65,16 @@ namespace MyProFile.Server
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             builder.Services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "wwwroot";
             });
 
             var app = builder.Build();
+
+            Console.WriteLine("[APP] Environment: " + app.Environment.EnvironmentName);
+            Console.WriteLine("[APP] Running on: https://localhost:7082");
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -79,6 +84,7 @@ namespace MyProFile.Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
 
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontend");

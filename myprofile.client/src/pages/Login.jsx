@@ -1,16 +1,16 @@
-﻿// src/pages/Login.jsx
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
 import api from "@/services/api";
+import { useAuth } from "@/context/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const navigate = useNavigate();
-    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,56 +18,57 @@ export default function Login() {
 
         try {
             const res = await api.post("/auth/login", { email, password });
-            const token = res.data.token;
+            const { token, refreshToken } = res.data;
 
-            try {
-                jwtDecode(token); // проверка дали е валиден JWT
-            } catch {
-                setError("Получен е невалиден токен от сървъра.");
-                return;
+            login(token, refreshToken);
+
+            const decoded = jwtDecode(token);
+            const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+            switch (role) {
+                case "admin":
+                    navigate("/admin");
+                    break;
+                case "teacher":
+                    navigate("/teacher");
+                    break;
+                case "student":
+                    navigate("/dashboard");
+                    break;
+                default:
+                    navigate("/");
+                    break;
             }
-
-            localStorage.setItem("token", token);
-            localStorage.setItem("refreshToken", res.data.refreshToken || "");
-
-            login(token); // подава се само ако е валиден
-            navigate("/dashboard");
         } catch (err) {
-            setError("Невалидни данни за вход");
+            console.error("Login error:", err);
+            setError("Невалидни данни за вход или проблем със сървъра.");
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white p-6 rounded shadow-md w-80"
-            >
-                <h2 className="text-2xl font-bold mb-4 text-center">Вход</h2>
-
+        <div className="max-w-md mx-auto mt-20 p-6 border border-gray-300 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4 text-center">Вход в системата</h2>
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            <form onSubmit={handleSubmit}>
                 <input
                     type="email"
                     placeholder="Имейл"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="mb-4 p-2 border rounded w-full"
+                    className="w-full p-2 border mb-4 rounded"
                 />
-
                 <input
                     type="password"
                     placeholder="Парола"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="mb-4 p-2 border rounded w-full"
+                    className="w-full p-2 border mb-4 rounded"
                 />
-
-                {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
-
                 <button
                     type="submit"
-                    className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
                 >
                     Вход
                 </button>

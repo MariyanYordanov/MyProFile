@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyProFile.Data;
 
@@ -10,9 +11,11 @@ using MyProFile.Data;
 namespace MyProFile.Data.Migrations
 {
     [DbContext(typeof(MyProFileDbContext))]
-    partial class MyProFileDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403032840_AddRefreshTokenUserProps")]
+    partial class AddRefreshTokenUserProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
@@ -431,16 +434,16 @@ namespace MyProFile.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "256f1176-beae-437c-b4e1-466789c6f24b",
+                            ConcurrencyStamp = "b4797f2c-09fb-4776-950b-fb92a2398854",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGpFS4phxRdXck4VNHr8//iXs5f4PPire5XFkq5lxPoOAGVM6dhVp9Nmd8bfZAAbEQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFctgpr4nQUokvKuEpBh/nAh8H7GRgPuLFLHv8mYV44IEVlp9PmV7Voz+5fKeKtAbw==",
                             PhoneNumberConfirmed = false,
                             Role = "admin",
-                            SecurityStamp = "4c1259a2-1bea-420e-8571-36c4a02aae6a",
+                            SecurityStamp = "41e5af45-40fa-493d-8820-0068694151a9",
                             TwoFactorEnabled = false,
                             UserName = "admin1"
                         },
@@ -448,16 +451,16 @@ namespace MyProFile.Data.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "76375aae-000f-4944-bbdb-0dd5aebd2bbe",
+                            ConcurrencyStamp = "9dfe57ef-b492-421f-b764-fd2b4f4958cc",
                             Email = "teacher@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "TEACHER@EXAMPLE.COM",
                             NormalizedUserName = "TEACHER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPfqw3QaChxdqnRnbLMCiJUbdmTBAB3ZePV6waB800LyUr9MRIO4xLK/Tpv2wCawKA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJ/JT9KEYqlXHYXOIJ3xYF8T3IA6/qzli27IE4nxgUAoQmi9q5ol+utMQCfyr9WIkg==",
                             PhoneNumberConfirmed = false,
                             Role = "teacher",
-                            SecurityStamp = "9e471a3c-0618-47e1-a055-bb16e809f0e4",
+                            SecurityStamp = "b8a8b791-ce0d-4a0d-970c-621706ee2e14",
                             TwoFactorEnabled = false,
                             UserName = "teacher1"
                         },
@@ -465,16 +468,16 @@ namespace MyProFile.Data.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "11c08303-fdb6-4cab-8057-e2e4ea590c64",
+                            ConcurrencyStamp = "f85b0067-4c28-4c3a-a27f-20d44d0da648",
                             Email = "student@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "STUDENT@EXAMPLE.COM",
                             NormalizedUserName = "STUDENT1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGapOlDqgsT+NIpeq1N6RIQ5+C7zho43DHXPc+lBf2xwhzXkgIeWBxdb/PI84lQJSw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMxRpYH+2Yvej5jQTThM+nvSAe1NY5EJ9ZKsuGa8ba3zpypqpCafvLbZQ0ZEeK/caw==",
                             PhoneNumberConfirmed = false,
                             Role = "student",
-                            SecurityStamp = "2a2eb34e-1cfa-40c4-a161-fd1a3072c8a0",
+                            SecurityStamp = "a62dd5fd-ce9a-4242-9154-5832214b5555",
                             TwoFactorEnabled = false,
                             UserName = "student1"
                         });

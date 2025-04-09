@@ -9,5 +9,7 @@ namespace MyProFile.Data.Models
 
         // Връзка с ученици (ако този User е teacher)
         public ICollection<Student>? Mentees { get; set; }
+
+        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

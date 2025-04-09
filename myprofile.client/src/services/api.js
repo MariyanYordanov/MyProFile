@@ -5,7 +5,7 @@ const getToken = () => localStorage.getItem("token");
 
 // Създаваме Axios инстанция с базов URL към backend API (през proxy)
 const api = axios.create({
-    baseURL: "/api",
+    baseURL: 'https://localhost:7082/api',
     withCredentials: true, // за да пращаме cookies ако има
     headers: {
         "Content-Type": "application/json",

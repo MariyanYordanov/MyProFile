@@ -1,102 +1,61 @@
 ﻿import { useState } from "react";
-import api from "@/services/api.js";
+import api from "@/services/api";
 
-export default function AchievementUploadForm({ studentId, onUpload }) {
-    const [formData, setFormData] = useState({
-        title: "",
-        details: "",
-        date: "",
-        proof: null,
-    });
+export default function AchievementUploadForm({ onUpload }) {
+    const [description, setDescription] = useState("");
+    const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === "proof") {
-            setFormData((prev) => ({ ...prev, proof: files[0] }));
-        } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
-        }
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!file) return setError("Моля, прикачете файл.");
 
-        const data = new FormData();
-        data.append("title", formData.title);
-        data.append("details", formData.details);
-        data.append("date", formData.date);
-        if (formData.proof) data.append("proof", formData.proof);
+        const formData = new FormData();
+        formData.append("description", description);
+        formData.append("file", file);
 
-        api
-            .post(`/students/${studentId}/achievements`, data, {
+        try {
+            const res = await api.post("/achievements", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
-            })
-            .then((res) => {
-                onUpload?.(res.data);
-                setFormData({
-                    title: "",
-                    details: "",
-                    date: "",
-                    proof: null,
-                });
-                setError(null);
-            })
-            .catch((err) => {
-                console.error("Upload error:", err);
-                setError("Неуспешно качване на постижение.");
             });
+
+            setDescription("");
+            setFile(null);
+            setError(null);
+            onUpload?.(res.data);
+        } catch (err) {
+            console.error(err);
+            setError("Грешка при качването на постижението.");
+        }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block">Заглавие:</label>
+                <label className="block mb-1">Описание на постижението</label>
                 <input
                     type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full border px-3 py-2 rounded"
                     required
-                    className="w-full border rounded p-2"
                 />
             </div>
             <div>
-                <label className="block">Описание:</label>
-                <textarea
-                    name="details"
-                    value={formData.details}
-                    onChange={handleChange}
-                    className="w-full border rounded p-2"
-                ></textarea>
-            </div>
-            <div>
-                <label className="block">Дата:</label>
-                <input
-                    type="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    required
-                    className="w-full border rounded p-2"
-                />
-            </div>
-            <div>
-                <label className="block">Доказателство:</label>
+                <label className="block mb-1">Файл</label>
                 <input
                     type="file"
-                    name="proof"
-                    accept="image/*,application/pdf"
-                    onChange={handleChange}
-                    className="w-full border rounded p-2"
+                    onChange={(e) => setFile(e.target.files[0])}
+                    className="w-full"
+                    required
                 />
             </div>
-            {error && <p className="text-red-600">{error}</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
             <button
                 type="submit"
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
                 Качи постижение
             </button>

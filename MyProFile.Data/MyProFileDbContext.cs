@@ -137,5 +137,12 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
                 StudentId = 2
             }
         );
+
+        modelBuilder
+            .Entity<RefreshToken>()
+            .HasOne(rt => rt.User)
+            .WithMany(u => u.RefreshTokens)
+            .HasForeignKey(rt => rt.UserId);
+
     }
 }
