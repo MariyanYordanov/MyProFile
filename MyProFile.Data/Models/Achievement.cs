@@ -26,4 +26,5 @@ public class Achievement
 
     public string? ProofPath { get; set; }
 
+    public bool IsVerified { get; set; } = false;
 }

@@ -1,22 +1,22 @@
 ﻿import axios from "axios";
 
-// Взимаме токена от localStorage (или по-късно от context)
 const getToken = () => localStorage.getItem("token");
 
-// Създаваме Axios инстанция с базов URL към backend API (през proxy)
 const api = axios.create({
-    baseURL: 'https://localhost:7082/api',
-    withCredentials: true, // за да пращаме cookies ако има
+    baseURL: "/api",
+    withCredentials: true,
     headers: {
-        "Content-Type": "application/json",
-    },
+        "Content-Type": "application/json"
+    }
 });
 
-// Добавяме Authorization header автоматично към всички заявки
 api.interceptors.request.use((config) => {
     const token = getToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log("[axios] ✅ Token attached:", token.slice(0, 20) + "...");
+    } else {
+        console.warn("[axios] ❌ Невалиден или липсващ токен:", token);
     }
     return config;
 });

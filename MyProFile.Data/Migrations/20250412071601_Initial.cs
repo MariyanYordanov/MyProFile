@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyProFile.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSeed : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,6 +35,7 @@ namespace MyProFile.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Role = table.Column<string>(type: "TEXT", nullable: false),
+                    FullName = table.Column<string>(type: "TEXT", nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -214,7 +215,8 @@ namespace MyProFile.Data.Migrations
                     Details = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
                     StudentId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ProofPath = table.Column<string>(type: "TEXT", nullable: true)
+                    ProofPath = table.Column<string>(type: "TEXT", nullable: true),
+                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -280,7 +282,8 @@ namespace MyProFile.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Area = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
-                    StudentId = table.Column<int>(type: "INTEGER", nullable: false)
+                    StudentId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -364,19 +367,29 @@ namespace MyProFile.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, null, "admin", "ADMIN" },
-                    { 2, null, "teacher", "TEACHER" },
-                    { 3, null, "student", "STUDENT" }
+                    { 1, "c0327c3a-4299-4dc0-9e43-69f4635ef343", "admin", "ADMIN" },
+                    { 2, "1ff0f945-f812-4528-abf9-16c690f94d32", "teacher", "TEACHER" },
+                    { 3, "153c5e74-f311-4422-be5f-a9d73fd0eae8", "student", "STUDENT" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Role", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FullName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Role", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "5ad1d308-0721-4e3f-b5b9-441d89849850", "admin@example.com", true, false, null, "ADMIN@EXAMPLE.COM", "ADMIN1", "AQAAAAIAAYagAAAAEPYA6QPHEeI30s8QHsk/jSpFwLnUBjhP/VHyjwwTia1IE3PqGx2MQm69Zt6Zzy8i0g==", null, false, "admin", "f0075263-425b-4d79-b925-1d5b1a5b727e", false, "admin1" },
-                    { 2, 0, "c9e082c8-7d8e-4d31-a6d0-db948f9607ed", "teacher@example.com", true, false, null, "TEACHER@EXAMPLE.COM", "TEACHER1", "AQAAAAIAAYagAAAAEDFkvpwI8Bk3i6qRUliu09YdI1Mglf2GslBD5oN4FfDyKD3TWFbAVPL4rv73bWMO8Q==", null, false, "teacher", "cba65039-e55d-4521-a8b1-f311e0b76ad3", false, "teacher1" },
-                    { 3, 0, "d417a953-7c02-405f-af43-17228700b7ad", "student@example.com", true, false, null, "STUDENT@EXAMPLE.COM", "STUDENT1", "AQAAAAIAAYagAAAAEPBXS7gITnI4lyRBcQJdmTYOkuj08FiaofRkcRsAKewbkjDJilh4dr5t5ckANRRHzg==", null, false, "student", "b7b9e45c-afc2-4159-9ed1-6ea2174ccf1d", false, "student1" }
+                    { 1, 0, "cc60c355-0ed2-4db8-9efd-0715694a91a4", "admin@example.com", true, "Иван Иванов", false, null, "ADMIN@EXAMPLE.COM", "ADMIN1", "AQAAAAIAAYagAAAAEC58xaKa+YxxS9QIdnT4pTPC7rTDLdhQKdPx5z5fMpl5nxUN+rr2quarlPolr09AkA==", null, false, "admin", "4a968499-94de-4b90-ac40-aee29c76660a", false, "admin1" },
+                    { 2, 0, "0f8b6aba-523c-4350-8a88-2df38cf938a0", "teacher@example.com", true, "Първан Първанов", false, null, "TEACHER@EXAMPLE.COM", "TEACHER1", "AQAAAAIAAYagAAAAEKn1IbJ1Axyj2VGn2DEPcKK507Ap7P4DjObEwbtgkJ0FtUgm3J37E9m7x5p6GtYWKw==", null, false, "teacher", "c07be3c0-1f5e-4254-964a-bd92c0626ff1", false, "teacher1" },
+                    { 3, 0, "d8b55529-6765-408a-bd2a-bfaf11b29d90", "student@example.com", true, "Георги Георгиев", false, null, "STUDENT@EXAMPLE.COM", "STUDENT1", "AQAAAAIAAYagAAAAEElD0neVMtJVIcfXItMsGkjPKuTOZrIe9zE0okoCFYVGiMtv4gTjf0s2rswwxt0cyg==", null, false, "student", "5580a03f-dcdc-4aa9-8cf7-47cb43cccc90", false, "student1" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 2 },
+                    { 3, 3 }
                 });
 
             migrationBuilder.InsertData(

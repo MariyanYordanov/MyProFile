@@ -22,16 +22,15 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
+        // 1. Roles
         modelBuilder.Entity<IdentityRole<int>>().HasData(
-        new IdentityRole<int> { Id = 1, Name = "admin", NormalizedName = "ADMIN" },
-        new IdentityRole<int> { Id = 2, Name = "teacher", NormalizedName = "TEACHER" },
-        new IdentityRole<int> { Id = 3, Name = "student", NormalizedName = "STUDENT" });
+            new IdentityRole<int> { Id = 1, Name = "admin", NormalizedName = "ADMIN", ConcurrencyStamp = Guid.NewGuid().ToString() },
+            new IdentityRole<int> { Id = 2, Name = "teacher", NormalizedName = "TEACHER", ConcurrencyStamp = Guid.NewGuid().ToString() },
+            new IdentityRole<int> { Id = 3, Name = "student", NormalizedName = "STUDENT", ConcurrencyStamp = Guid.NewGuid().ToString() }
+        );
 
-
+        // 2. Users
         var hasher = new PasswordHasher<User>();
-
         modelBuilder.Entity<User>().HasData(
             new User
             {
@@ -43,7 +42,8 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
                 EmailConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "Admin123!"),
                 SecurityStamp = Guid.NewGuid().ToString(),
-                Role = "admin"
+                Role = "admin",
+                FullName = "Иван Иванов"
             },
             new User
             {
@@ -55,7 +55,8 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
                 EmailConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "Teacher123!"),
                 SecurityStamp = Guid.NewGuid().ToString(),
-                Role = "teacher"
+                Role = "teacher",
+                FullName = "Първан Първанов"
             },
             new User
             {
@@ -67,11 +68,19 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
                 EmailConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "Student123!"),
                 SecurityStamp = Guid.NewGuid().ToString(),
-                Role = "student"
+                Role = "student",
+                FullName = "Георги Георгиев"
             }
         );
 
+        // 3. UserRoles
+        modelBuilder.Entity<IdentityUserRole<int>>().HasData(
+            new IdentityUserRole<int> { UserId = 1, RoleId = 1 },
+            new IdentityUserRole<int> { UserId = 2, RoleId = 2 },
+            new IdentityUserRole<int> { UserId = 3, RoleId = 3 }
+        );
 
+        // 4. Students
         modelBuilder.Entity<Student>().HasData(
             new Student
             {
@@ -97,6 +106,27 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
             }
         );
 
+        // 5. Events
+        modelBuilder.Entity<Event>().HasData(
+            new Event
+            {
+                Id = 1,
+                Title = "Участие в ученическа конференция",
+                Description = "Изнесена презентация на тема ИИ в образованието",
+                Date = new DateTime(2024, 3, 15),
+                StudentId = 1
+            },
+            new Event
+            {
+                Id = 2,
+                Title = "Стаж в ИТ фирма",
+                Description = "2 седмици практика в Software Company",
+                Date = new DateTime(2024, 6, 10),
+                StudentId = 2
+            }
+        );
+
+        // 6. Конфигурации за навигации
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasKey(s => s.Id);
@@ -119,30 +149,7 @@ public class MyProFileDbContext : IdentityDbContext<User, IdentityRole<int>, int
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Event>().HasData(
-            new Event
-            {
-                Id = 1,
-                Title = "Участие в ученическа конференция",
-                Description = "Изнесена презентация на тема ИИ в образованието",
-                Date = new DateTime(2024, 3, 15),
-                StudentId = 1
-            },
-            new Event
-            {
-                Id = 2,
-                Title = "Стаж в ИТ фирма",
-                Description = "2 седмици практика в Software Company",
-                Date = new DateTime(2024, 6, 10),
-                StudentId = 2
-            }
-        );
-
-        modelBuilder
-            .Entity<RefreshToken>()
-            .HasOne(rt => rt.User)
-            .WithMany(u => u.RefreshTokens)
-            .HasForeignKey(rt => rt.UserId);
-
+        base.OnModelCreating(modelBuilder);
     }
+
 }

@@ -16,6 +16,7 @@ import RequireRole from "@/components/RequireRole";
 
 export default function App() {
     console.log("App loaded");
+
     return (
         <Routes>
             <Route path="/" element={<Home />} />
@@ -33,10 +34,10 @@ export default function App() {
                 </Route>
 
                 <Route element={<RequireRole allowedRoles={["teacher"]} />}>
-                    <Route path="/teacher" element={<TeacherPage />} />
+                    <Route path="/teachers" element={<TeacherPage />} />
                 </Route>
             </Route>
-         
+
             <Route path="*" element={<NotFound />} />
         </Routes>
     );

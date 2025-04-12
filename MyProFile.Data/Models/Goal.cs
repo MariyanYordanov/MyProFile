@@ -18,4 +18,7 @@ public class Goal
     public int StudentId { get; set; }
 
     public Student Student { get; set; } = null!;
+
+    public bool IsVerified { get; set; } = false;
+
 }

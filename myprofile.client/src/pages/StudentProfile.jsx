@@ -1,15 +1,27 @@
 ﻿import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/services/api";
 
 export default function StudentProfile() {
     const { id } = useParams();
     const [student, setStudent] = useState(null);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        axios.get(`/api/students/${id}`).then(res => setStudent(res.data));
+        const fetchStudent = async () => {
+            try {
+                const res = await api.get(`/students/${id}`);
+                setStudent(res.data);
+            } catch (err) {
+                console.error("Грешка при зареждане на профила:", err);
+                setError("Неуспешно зареждане на профил.");
+            }
+        };
+
+        fetchStudent();
     }, [id]);
 
+    if (error) return <div className="text-red-500">{error}</div>;
     if (!student) return <div>Зареждане...</div>;
 
     return (
@@ -18,7 +30,11 @@ export default function StudentProfile() {
             <p>Клас: {student.class}</p>
             <p>Специалност: {student.speciality}</p>
             <p>Среден успех: {student.averageGrade}</p>
-            <img src={`/profiles/${student.profilePicturePath}`} alt="Профилна снимка" className="mt-4 w-40 h-40 object-cover rounded-full" />
+            <img
+                src={`/profiles/${student.profilePicturePath}`}
+                alt="Профилна снимка"
+                className="mt-4 w-40 h-40 object-cover rounded-full"
+            />
         </div>
     );
 }

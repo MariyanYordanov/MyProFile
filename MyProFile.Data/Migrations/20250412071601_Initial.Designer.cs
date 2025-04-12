@@ -11,8 +11,8 @@ using MyProFile.Data;
 namespace MyProFile.Data.Migrations
 {
     [DbContext(typeof(MyProFileDbContext))]
-    [Migration("20250403044806_FixBug")]
-    partial class FixBug
+    [Migration("20250412071601_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace MyProFile.Data.Migrations
                     b.Property<string>("Details")
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ProofPath")
                         .HasColumnType("TEXT");
@@ -145,6 +148,9 @@ namespace MyProFile.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("INTEGER");
 
@@ -245,18 +251,21 @@ namespace MyProFile.Data.Migrations
                         new
                         {
                             Id = 1,
+                            ConcurrencyStamp = "c0327c3a-4299-4dc0-9e43-69f4635ef343",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
+                            ConcurrencyStamp = "1ff0f945-f812-4528-abf9-16c690f94d32",
                             Name = "teacher",
                             NormalizedName = "TEACHER"
                         },
                         new
                         {
                             Id = 3,
+                            ConcurrencyStamp = "153c5e74-f311-4422-be5f-a9d73fd0eae8",
                             Name = "student",
                             NormalizedName = "STUDENT"
                         });
@@ -340,6 +349,23 @@ namespace MyProFile.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            RoleId = 3
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -380,6 +406,10 @@ namespace MyProFile.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
@@ -434,16 +464,17 @@ namespace MyProFile.Data.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "256f1176-beae-437c-b4e1-466789c6f24b",
+                            ConcurrencyStamp = "cc60c355-0ed2-4db8-9efd-0715694a91a4",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
+                            FullName = "Иван Иванов",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGpFS4phxRdXck4VNHr8//iXs5f4PPire5XFkq5lxPoOAGVM6dhVp9Nmd8bfZAAbEQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEC58xaKa+YxxS9QIdnT4pTPC7rTDLdhQKdPx5z5fMpl5nxUN+rr2quarlPolr09AkA==",
                             PhoneNumberConfirmed = false,
                             Role = "admin",
-                            SecurityStamp = "4c1259a2-1bea-420e-8571-36c4a02aae6a",
+                            SecurityStamp = "4a968499-94de-4b90-ac40-aee29c76660a",
                             TwoFactorEnabled = false,
                             UserName = "admin1"
                         },
@@ -451,16 +482,17 @@ namespace MyProFile.Data.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "76375aae-000f-4944-bbdb-0dd5aebd2bbe",
+                            ConcurrencyStamp = "0f8b6aba-523c-4350-8a88-2df38cf938a0",
                             Email = "teacher@example.com",
                             EmailConfirmed = true,
+                            FullName = "Първан Първанов",
                             LockoutEnabled = false,
                             NormalizedEmail = "TEACHER@EXAMPLE.COM",
                             NormalizedUserName = "TEACHER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPfqw3QaChxdqnRnbLMCiJUbdmTBAB3ZePV6waB800LyUr9MRIO4xLK/Tpv2wCawKA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKn1IbJ1Axyj2VGn2DEPcKK507Ap7P4DjObEwbtgkJ0FtUgm3J37E9m7x5p6GtYWKw==",
                             PhoneNumberConfirmed = false,
                             Role = "teacher",
-                            SecurityStamp = "9e471a3c-0618-47e1-a055-bb16e809f0e4",
+                            SecurityStamp = "c07be3c0-1f5e-4254-964a-bd92c0626ff1",
                             TwoFactorEnabled = false,
                             UserName = "teacher1"
                         },
@@ -468,16 +500,17 @@ namespace MyProFile.Data.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "11c08303-fdb6-4cab-8057-e2e4ea590c64",
+                            ConcurrencyStamp = "d8b55529-6765-408a-bd2a-bfaf11b29d90",
                             Email = "student@example.com",
                             EmailConfirmed = true,
+                            FullName = "Георги Георгиев",
                             LockoutEnabled = false,
                             NormalizedEmail = "STUDENT@EXAMPLE.COM",
                             NormalizedUserName = "STUDENT1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGapOlDqgsT+NIpeq1N6RIQ5+C7zho43DHXPc+lBf2xwhzXkgIeWBxdb/PI84lQJSw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEElD0neVMtJVIcfXItMsGkjPKuTOZrIe9zE0okoCFYVGiMtv4gTjf0s2rswwxt0cyg==",
                             PhoneNumberConfirmed = false,
                             Role = "student",
-                            SecurityStamp = "2a2eb34e-1cfa-40c4-a161-fd1a3072c8a0",
+                            SecurityStamp = "5580a03f-dcdc-4aa9-8cf7-47cb43cccc90",
                             TwoFactorEnabled = false,
                             UserName = "student1"
                         });
@@ -513,47 +546,6 @@ namespace MyProFile.Data.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedByIp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReplacedByToken")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("Revoked")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RevokedByIp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("Sanction", b =>
@@ -769,17 +761,6 @@ namespace MyProFile.Data.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("RefreshToken", b =>
-                {
-                    b.HasOne("MyProFile.Data.Models.User", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Sanction", b =>
                 {
                     b.HasOne("Student", "Student")
@@ -804,8 +785,6 @@ namespace MyProFile.Data.Migrations
             modelBuilder.Entity("MyProFile.Data.Models.User", b =>
                 {
                     b.Navigation("Mentees");
-
-                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("Student", b =>
